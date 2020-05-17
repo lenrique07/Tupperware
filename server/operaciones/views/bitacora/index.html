@@ -1,0 +1,131 @@
+{%extends ../../../common/views/layout.html%}
+{%block style%}
+{% set user = usuario %}
+<style>
+    .accion{ cursor:pointer }
+
+    .titulo-verde-own{
+        color:  white  !important;
+    }
+
+    .green-own{
+        background-color: #95c11f !important;
+
+    }
+        .title-rg-own{
+        font-weight: bolder !important;
+        color: #044f17 !important;
+    }
+</style>
+<script src="resources/js/functions.js"></script>
+<!--link href="resources/plugins/lastdatatables/datatables.min.css" rel="stylesheet" type="text/css" /-->
+
+<script>
+    main_route = '/bitacora'
+
+    function default_values() {
+        page_nr = 1
+        max_entries = 10
+        like_search = ""
+        order_by = ""
+        ascendant = true
+    }
+    default_values()
+</script>
+{%end%}
+{%block content%}
+
+<div class="header"><h2 class="title-rg-own">BITÁCORA</h2></div>
+<div class="body">
+    <div class="row clearfix">
+        <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+        </div>
+    </div>
+    <div class="row">
+        <div class="body table-responsive">
+            <table id="data_table" class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th class="order_by_th" data-name="names">ID </th>
+                        <th class="order_by_th" data-name="phone">Usuario </th>
+                        <th class="order_by_th" data-name="phone">Acción </th>
+                        <th class="order_by_th" data-name="phone">Dirección IP </th>
+                        <th class="order_by_th" data-name="phone">Fecha </th>
+                    </tr>
+                </thead>
+                <tbody id="table_content">
+                    {% include 'table.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+</div>
+{%end%}
+{% block script %}
+<script src="resources/plugins/momentjs/moment.js"></script>
+<script src="resources/plugins/momentjs/locale/es.js"></script>
+<script src="resources/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+<!--script src="resources/plugins/lastdatatables/datatables.min.js" type="text/javascript"></script-->
+
+<script>
+    $(document).ready( function () {
+        $('#data_table').DataTable({
+            "order": [[0, "desc"]],
+            language : {
+                "url": "/resources/js/spanish.json"
+            }
+        });
+    });
+
+        $('#sucursal').selectpicker({
+           size: 4,
+           liveSearch: true,
+           liveSearchPlaceholder: 'Buscar sucursal.',
+           title: 'Seleccione una sucursal.'
+       })
+
+        $('#fkalmacen').selectpicker({
+           size: 4,
+           liveSearch: true,
+           liveSearchPlaceholder: 'Buscar almacén.',
+           title: 'Seleccione un almacén.'
+       })
+
+        $("#sucursal").on('change', function () {
+        id = parseInt($('#sucursal').val())
+        objeto = JSON.stringify({'id':id})
+        $.ajax({
+                url: "/almacenes_sucursal",
+                type: "post",
+                data: {object:objeto, _xsrf: getCookie("_xsrf")},
+            }).done(function (response) {
+                valor = JSON.parse(response)
+                combo = ""
+                $.map(valor.response, function(a) {
+                    combo = combo+'<option value='+a.id+'>'+a.nombre+'</option>'
+                });
+                $("#fkalmacen").html(combo)
+                $("#fkalmacen").selectpicker('refresh')
+            })
+    });
+
+
+   $('.date').bootstrapMaterialDatePicker({
+       format: 'D/MM/YYYY',
+       clearButton: false,
+       weekStart: 1,
+       locale:'es',
+       time: false
+   }).on('change', function(e, date) {
+       $(this).parent().addClass('focused');
+       $('#d_end').bootstrapMaterialDatePicker('setMinDate', date);
+   });
+
+        attach_validators()
+
+
+        reload_form()
+</script>
+
+{% end %}

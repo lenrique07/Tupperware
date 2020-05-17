@@ -1,0 +1,227 @@
+{% extends ../../common/views/layout.html %}
+{% block style %}
+{% set user = usuario %}
+<style>
+    .accion {
+        cursor: pointer
+    }
+    .scroll-own{
+        overflow-y: scroll;
+    }
+      .md-dialog-own{
+        width: 60% !important;
+    }
+</style>
+<script src="resources/js/functions.js"></script>
+
+<link href="resources/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
+<script>
+    main_route = '/configuracion'
+
+    function default_values() {
+        page_nr = 1
+        max_entries = 10
+        like_search = ""
+        order_by = ""
+        ascendant = true
+    }
+
+    default_values()
+</script>
+{% end %}
+{% block content %}
+
+
+{% if 'configuracion_insert' in privileges or 'configuracion_update' in privileges %}
+{% include form.html %}
+{% end %}
+
+<div class="header bg-indigo"><h2>Configuracion</h2></div>
+<div class="body">
+
+        <div id="rproc-loader" class="loader-wrapper" style="display: none">
+            <div class="loader loader-own">
+                <div class="preloader preloader-own">
+                    <div class="spinner-layer pl-teal">
+                        <div class="circle-clipper left"><div class="circle"></div></div>
+                        <div class="circle-clipper right"><div class="circle"></div></div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center inf-own">Cargando...</p>
+        </div>
+
+    {% if 'configuracion_query' in privileges %}
+    <div class="row">
+        <div class="body table-responsive">
+            <table id="data_table" class="table table-bordered table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="order_by_th" data-name="names">Video</th>
+                    <th class="order_by_th" data-name="names">Facebook</th>
+                    <th class="order_by_th" data-name="names">Pagina Oficial</th>
+                    <th class="order_by_th" data-name="names">Twitter</th>
+                    <th class="order_by_th" data-name="names">Otro</th>
+                    <th class="actions_header">Acciones</th>
+                </tr>
+                </thead>
+                <tbody id="table_content">
+                {% include 'table.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+    {% end %}
+</div>
+{% end %}
+{% block script %}
+<script src="resources/plugins/momentjs/moment.js"></script>
+<script src="resources/plugins/momentjs/locale/es.js"></script>
+<script src="resources/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+<script src="resources/js/jquery.toast.js"></script>
+
+<script src="resources/plugins/bootstrap-select/js/bootstrap-select.js"></script>
+<!-- Jquery Validation Plugin Css -->
+<!--<script src="resources/plugins/jquery-validation/jquery.validate.js"></script>-->
+<!-- Input Mask Plugin Js -->
+<script src="resources/js/validations.js"></script>
+<script src="resources/plugins/jquery-inputmask/jquery.inputmask.bundle.js"></script>
+<script src="resources/plugins/momentjs/moment.js"></script>
+<script src="resources/plugins/momentjs/locale/es.js"></script>
+<script src="resources/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+<script>
+var ips = ""
+      $(document).ajaxStart(function () {
+        $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
+            ips = data
+        })
+    });
+
+    $(document).ajaxStop(function () {
+        $.Toast.hideToast();
+    });
+
+        $('#data_table').DataTable({
+        /*dom: 'Bfrtip',
+        pageLength: 100,
+        buttons: [
+
+        ],*/language : {
+           "url": "/resources/js/spanish.json"
+       }
+    });
+
+    {#attach_validators()#}
+
+    {% if 'configuracion_update' in privileges %}
+    function attach_edit() {
+        $('.edit').click(function () {
+            obj = JSON.stringify({
+                'id': parseInt(JSON.parse($(this).attr('data-json')))
+            });
+          ajax_call_get("{{privileges['configuracion_update'].route}}", {
+                _xsrf: getCookie("_xsrf"),
+                object: obj
+            }, function (response) {
+                var self = response;
+                $('#id').val(self.id),
+                $('#video').val(self.video),
+                $('#facebook').val(self.facebook)
+                $('#pagina').val(self.pagina)
+                $('#twitter').val(self.twitter)
+                $('#otro').val(self.otro)
+                clean_form()
+                verif_inputs2()
+                $('#id_div').hide()
+                $('#insert').hide()
+                $('#update').show()
+                $('#form').modal('show')
+            })
+        });
+
+        $('#imagen_update2').on('click', function (e) {
+
+            e.preventDefault();
+            var data = new FormData($('#submit_imagen2')[0]);
+//            if (!AllGood()){ return }
+            objeto = JSON.stringify({
+                'id': parseInt($('#id').val()),
+                'video': $('#video').val(),
+                'facebook': $('#facebook').val(),
+                'pagina': $('#pagina').val(),
+                'twitter': $('#twitter').val(),
+                'otro': $('#otro').val(),
+                'ip':  ips,
+            });
+            ruta = "{{privileges['configuracion_update'].route}}";
+            data.append('object', objeto)
+            data.append('_xsrf',getCookie("_xsrf"))
+            $.ajax({
+                url: ruta,
+                type: "post",
+                data: data,
+                contentType: false,
+                processData: false,
+                cache: false,
+                async: false
+            }).done(function (response) {
+                response=JSON.parse(response);
+                if (response.success){
+                    showMessage(response.message, "success", "ok");
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open');
+                    $('#form2').modal('hide')
+                    query(main_route)
+                }else{
+                    showMessage(response.message, "danger", "remove");
+                    $("#submit_imagen2").waitMe("hide");
+                }
+            }),location.reload()
+        });
+    }
+
+    {% end %}
+    reload_form()
+</script>
+<script>
+
+    {% if 'configuracion_update' in privileges %}
+    attach_edit()
+    {% end %}
+
+    {% if 'configuracion_delete' in privileges %}
+    $('.delete').click(function () {
+        objeto = JSON.stringify({
+            'id':  parseInt(JSON.parse($(this).attr('data-json'))),
+            'enabled': false,
+            'ip':  ips,
+        });
+        swal({
+            title: "¿Desea dar de baja el Configuracion?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#673AB7",
+            cancelButtonColor: "#F44336",
+            confirmButtonText: "Aceptar",
+            cancelButtonText: "Cancelar"
+        }).then(function () {
+            ajax_call("{{privileges['configuracion_delete'].route}}", {
+                object: objeto,
+                _xsrf: getCookie("_xsrf")
+            }, null, function () {
+                setTimeout(function () {
+                    window.location = main_route
+                }, 2000);
+            })
+        })
+    });
+    {% end %}
+</script>
+
+{% end %}
+
+
+
+

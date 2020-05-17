@@ -1,0 +1,539 @@
+{%extends ../../../common/views/layout.html%}
+{%block style%}
+{% set user = usuario %}
+<style>
+    .accion{ cursor:pointer }
+    .error-own{
+        display: block !important;
+        height: 0px !important;
+        padding: 0px !important;
+        margin: 0px !important;
+    }
+
+    .green-own{
+        background-color: #95c11f;
+    }
+
+    .titulo-verde-own{
+        color: #044f17 !important;
+    }
+
+    .button-green-own{
+        background-color: #0B1D50;
+
+    }
+
+    .blanco{
+        color: white !important;
+
+    }
+    .title-rg-own{
+        font-weight: bolder !important;
+        color: #044f17 !important;
+    }
+
+</style>
+<script src="resources/js/functions.js"></script>
+<script>
+    main_route = '/usuario'
+
+    function default_values() {
+        page_nr = 1
+        max_entries = 10
+        like_search = ""
+        order_by = ""
+        ascendant = true
+    }
+    default_values()
+</script>
+{%end%}
+{%block content%}
+{% if 'usuario_insert' in privileges or 'usuario_update' in privileges %}
+{% include form.html %}
+{% end %}
+
+<div class="header"><h2 class="title-rg-own">USUARIOS</h2></div>
+<div class="body">
+    <div class="row clearfix">
+        <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+        {% if 'usuario_insert' in privileges %}
+           <button id="new" type="button" class="btn bg-indigo waves-effect" title="Nuevo">
+            <i class="material-icons blanco">add</i>
+            </button>
+            <button id="usuario_servicio" type="button" class="btn bg-indigo waves-effect" title="servicio">
+                <i class="material-icons blanco">cloud_download</i>
+            </button>
+        {% end %}
+        </div>
+        <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+                {% if 'usuario_insert' in privileges %}
+                <button id="limpiar_usuario" type="button" class="btn bg-red waves-effect" title="limpiar_usuario">
+                    <i class="material-icons blanco">cloud_download</i>
+                </button>
+                {% end %}
+            </div>
+
+      <div id="rproc-loader" class="loader-wrapper" style="display: none">
+            <div class="loader loader-own">
+                <div class="preloader preloader-own">
+                    <div class="spinner-layer pl-teal">
+                        <div class="circle-clipper left"><div class="circle"></div></div>
+                        <div class="circle-clipper right"><div class="circle"></div></div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center inf-own">Cargando...</p>
+        </div>
+        {% if 'usuario_query' in privileges %}
+    </div>
+    <div class="row">
+        <div class="body table-responsive">
+            <table id="data_table" class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th class="order_by_th" data-name="name">Nombre </th>
+                        <th class="order_by_th" data-name="last_name">Apellidos </th>
+                        <th class="order_by_th" data-name="mail">Correo </th>
+                        <th class="order_by_th" data-name="usuarioname">Nombre de usuario </th>
+                      <th class="order_by_th" data-name="condominio">Foto </th>
+                        <th class="order_by_th" data-name="condominio">Rol </th>
+                        <th class="order_by_th" data-name="enabled">Estado </th>
+                        <th class="actions_header">Acciones </th>
+                    </tr>
+                </thead>
+
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+    {% end %}
+</div>
+{%end%}
+{% block script %}
+    <script>
+        var ips = ""
+      $(document).ajaxStart(function () {
+        $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
+            ips = data
+        })
+    });
+
+$(document).ready(function () {
+            var data = [];
+            {% set cont = 0 %}
+            {% for usuarios in objects %}
+                var estado = ""
+                {% if usuarios.enabled %}
+                    estado = "checked"
+                {% end %}
+                var check  =  '<input id="{{usuarios.id}}"  onClick="delet(this)" data-id="{{  usuarios.id }}" type="checkbox" class="module chk-col-deep-purple delete"  {%if usuarios.enabled%} {{"checked"}} {% end %}/> <label for="{{usuarios.id}}"></label>';
+                var botones = '<button id="edit" onClick="edit(this)" data-json="{{usuarios.id }}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons blanco">create</i></button>'
+                data.push( [
+                    '{{  usuarios.nombre }}',
+                    '{{ usuarios.apellido }}',
+                    '{{ usuarios.correo}}',
+                    '{{ usuarios.username }}',
+                     {% if usuarios.foto==" " %}
+                     '<img src="resources/images/sinImagen.jpg" alt="" style="width: 100px; height: 60px;"/>'
+                    {% else%}
+                    '<img src="{{ usuarios.foto }}" alt="" style="width: 100px; height: 60px;"/>'
+                    {% end%},
+                    '{{ usuarios.rol.nombre }}',
+                    check,
+                     botones
+                ]);
+            {% set cont = cont + 1 %}
+            {% end %}
+            cargar_tabla(data)
+        });
+
+function cargar_tabla(data){
+    if ( $.fn.DataTable.isDataTable( '#data_table' ) ) {
+        var table = $('#data_table').DataTable();
+        table.destroy();
+
+    }
+
+    $('#data_table').DataTable({
+        data:           data,
+        deferRender:    true,
+        scrollCollapse: true,
+        scroller:       true,
+
+        dom: "Bfrtip" ,
+        buttons: [
+        ],
+        initComplete: function () {
+            $("#rgm-loader").fadeOut('800');
+
+        },
+        "order": [[ 1, "desc" ]],
+        language : {
+            'url': '/resources/js/spanish.json',
+        },
+        "pageLength": 50
+    });
+}
+
+
+        validationKeyup("form")
+        validationSelectChange("form")
+        $('#role_id').selectpicker({
+           size: 10,
+           liveSearch: true,
+           liveSearchPlaceholder: 'Buscar rol.',
+           title: 'Seleccione un rol.'
+       })
+
+        attach_validators()
+        {% if 'usuario_insert' in privileges %}
+        $('#new').click(function () {
+            $('#id').val('')
+            $('#nombre').val('')
+            $('#apellido').val('')
+            $('#correo').val('')
+            $('#username').val('')
+            $('#password').val('')
+
+            $('#role_id').val('')
+            $('#role_id').selectpicker('render')
+
+            {#clean_form()#}
+            verif_inputs()
+            $('#id_div').hide()
+            $('#insert').show()
+            $('#pass').show()
+            $('#update').hide()
+
+            $('#form').modal('show')
+        })
+
+$('#imagen_insert').on('click', function (e) {
+            e.preventDefault();
+            var data = new FormData($('#submit_imagen')[0]);
+        if(!validationInputSelects("form")) {
+            objeto = JSON.stringify({
+                'nombre': $('#nombre').val(),
+                'apellido': $('#apellido').val(),
+                'correo': $('#correo').val(),
+                'username': $('#username').val(),
+                'password': $('#password').val(),
+                'fkrol': parseInt($('#role_id').val()),
+                'ip': ips
+                });
+            ruta = "{{privileges['usuario_insert'].route}}";
+            data.append('object', objeto)
+            data.append('_xsrf',getCookie("_xsrf"))
+            render = null
+            callback = function () {
+                setTimeout
+                (function () {
+                    window.location = main_route
+                }, 2000);
+            }
+            $.ajax({
+                    url: ruta,
+                    type: "post",
+                    data: data,
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                      async: true,
+            beforeSend: function () {
+               $("#rproc-loader").fadeIn(800);
+               $("#new").hide();
+            },
+            success: function () {
+               $("#rproc-loader").fadeOut(800);
+               $("#new").show();
+              $("#usuario_servicio").show();
+            }
+                }).done(function (response) {
+                response=JSON.parse(response);
+                if ("message" in response && response.message != '') {
+                    if (response.success) {
+                        showMessage(response.message, "success", "ok")
+                    } else {
+                        showMessage(response.message, "danger", "remove")
+                    }
+                }
+                if (callback != null) {
+                    callback(response)
+                }
+            })
+                $('#form').modal('hide')
+         }else {
+            swal(
+                    'Error de datos.',
+                    'Hay campos vacios por favor verifique sus datos.',
+                    'error'
+            )
+        }
+        });
+    {% end %}
+
+        {% if 'usuario_update' in privileges %}
+         function edit(elemento){
+                 id = parseInt(JSON.parse($(elemento).attr('data-json')))
+                obj = JSON.stringify({
+                'id': id })
+                ajax_call_get("{{privileges['usuario_update'].route}}",{
+                    _xsrf: getCookie("_xsrf"),
+                    object: obj
+                },function(response){
+                    var self = response;
+                    $('#id2').val(self.id)
+                    $('#nombre2').val(self.nombre)
+                    $('#apellido2').val(self.apellido)
+                    $('#correo2').val(self.correo)
+                    $('#username2').val(self.username)
+                    $('#password2').val(self.password)
+                    $('#role_id2').val(self.fkrol)
+                    $('#role_id2').selectpicker('render')
+                    clean_form()
+                verif_inputs2()
+                $('#id_div2').hide()
+                $('#insert2').hide()
+                $('#update2').show()
+                $('#pass').hide()
+                $('#form2').modal('show')
+                })
+        }
+
+
+    $('#imagen_update').on('click', function (e) {
+            e.preventDefault();
+            var a =  0
+            var data = new FormData($('#submit_imagen2')[0]);
+//            if (!AllGood()){ return }
+            objeto = JSON.stringify({
+                'id': parseInt($('#id2').val()),
+                'nombre': $('#nombre2').val(),
+                'apellido': $('#apellido2').val(),
+                'correo': $('#correo2').val(),
+                'username': $('#username2').val(),
+                'fkrol': parseInt($('#role_id2').val()),
+                'password': ($('#password2').val()),
+                'ip': ips,
+            });
+            ruta = "{{privileges['usuario_update'].route}}";
+            data.append('object', objeto)
+            data.append('_xsrf',getCookie("_xsrf"))
+            render = null
+            $.ajax({
+                url: ruta,
+                type: "post",
+                data: data,
+                contentType: false,
+                processData: false,
+                })
+        location.reload();
+        query(main_route)
+        })
+        {% end %}
+        reload_form()
+        $('#role_id').selectpicker()
+    </script>
+    <script>
+
+        {% if 'usuario_delete' in privileges %}
+        function delet(e){
+        var verificar = false
+        idu = 0
+            id = parseInt(JSON.parse($(e).attr('data-id')))
+            cb_delete = this
+            b = $(this).prop('checked')
+            idu = $(this).prop('id')
+            if(!b){
+                cb_title = "¿Está seguro de que desea dar de baja al Usuario?"
+            } else {
+                cb_title ="¿Está seguro de que desea dar de alta al Usuario?"
+            }
+            swal({
+                text: cb_title,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#004c99",
+                cancelButtonColor: "#F44336",
+                confirmButtonText: "Aceptar",
+                cancelButtonText: "Cancelar"
+            }).then(function () {
+                verificar = !$(cb_delete).is(':checked')
+                $(cb_delete).prop('checked', !$(cb_delete).is(':checked'))
+                if(b)
+                    var a = $(cb_delete).parent().prop('title', 'Activo')
+                else
+                    var a = $(cb_delete).parent().prop('title', 'Inhabilitado')
+
+                console.log(!$(cb_delete).is('checked'))
+                objeto =JSON.stringify({
+                   id: id,
+                   enabled: $(cb_delete).is(':checked'),
+                    'ip': ips,
+                })
+                ajax_call(
+                    "{{privileges['usuario_delete'].route}}",
+                    {object: objeto,_xsrf: getCookie("_xsrf")},
+                    null,
+                    function (resp) {
+                        let self = JSON.parse(resp)
+                        if(self.success){
+                            $('#'+idu).prop('checked', verificar)
+                        }else{
+                            $('#'+idu).prop('checked', false)
+                            $('#'+idu).parent().prop('title', 'Inhabilitado')
+                        }
+                    }
+                )
+                $('#form').modal('hide')
+                window.location = main_route
+           })
+        }
+        {% end %}
+
+        $('#modificar_password').on('shown.bs.modal', function () {
+            $('#new_pass').focus();
+        })
+
+        $('.reset').click(function () {
+            id = parseInt(JSON.parse($(this).attr('data-json')))
+            $('#new_pass').val('')
+            $('#new_rpass').val('')
+            $('#new_pass').parent().addClass('focused')
+            $('#new_rpass').parent().addClass('focused')
+            $('#actual_pass').focus()
+            $('#id_usuario').val(id)
+            $('#modificar_password').modal('show');
+        })
+
+        function Modificar_Contraseña()
+        {
+            values="new_pass,new_rpass";
+            if(validate_inputs_empty(values)) {
+                swal({
+                        title: "Desea modificar la contraseña al usuario?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#4CAF50",
+                        cancelButtonColor: "#F44336",
+                        confirmButtonText: "Aceptar",
+                        cancelButtonText: "Cancelar"
+                    }).then(function () {
+                        id = $('#id_usuario').val()
+                        newp = $('#new_pass').val()
+                        newp1 = $('#new_rpass').val()
+                        objeto =JSON.stringify({'id' : id,'new_password' : newp, 'new_password_2':newp1,'ip':ips})
+                        if(newp==newp1)
+                        {
+                            $.ajax({
+                                url: "/usuario_reset_password",
+                                type: "post",
+                                data: {object:objeto, _xsrf: getCookie("_xsrf")},
+                            }).done(function (response) {
+                                    valor=JSON.parse(response)
+                                    if(valor.success)
+                                    {
+                                        swal(
+                                            'Contraseña modificada.',
+                                            'Se modificó la contraseña correctamente.',
+                                            'success'
+                                          )
+                                    }
+                                    else
+                                    {
+                                        swal(
+                                            'Contraseña actual errónea.',
+                                            'No se modificó la contraseña.',
+                                            'error'
+                                          )
+                                    }
+                            })
+                        }
+                        else
+                        {
+                            swal(
+                                'Error de datos.',
+                                'Las contraseñas no coinciden.',
+                                'error'
+                              )
+                        }
+                })
+            }
+            else
+            {
+                swal(
+                      'Error de datos.',
+                      'Hay campos vacios por favor verifique sus datos.',
+                      'error'
+                    )
+            }
+        }
+
+        $('.reset1').click(function () {
+            id = parseInt(JSON.parse($(this).attr('data-json')))
+            swal({
+                title: "Desea anular el dispositivo y habilitar nuevamente al usuario?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#673AB7",
+                cancelButtonColor: "#F44336",
+                confirmButtonText: "Aceptar",
+                cancelButtonText: "Cancelar"
+            }).then(function () {
+                ajax_call("/usuario_codigo_reset", { id,_xsrf: getCookie("_xsrf"),'ip':ips}, null, function () {setTimeout(function(){window.location=main_route}, 2000);})
+            })
+        })
+
+{% if 'usuario_insert' in privileges %}
+        $('#usuario_servicio').click(function () {
+            objeto = JSON.stringify({
+                 'ip': ips,
+                 })
+      ajax_call("/usuario_servicio", {
+                object: objeto,
+                _xsrf: getCookie("_xsrf"),
+                async: true,
+              beforeSend: function () {
+                 $("#rproc-loader").fadeIn(800);
+                 $("#new").hide();
+                $('#form3').modal('hide')
+              },
+              success: function () {
+                 $("#rproc-loader").fadeOut(800);
+                 $("#new").show();
+              }
+
+            }, null, function () {
+                setTimeout(function () {
+                    window.location = main_route
+                }, 2000);
+            });
+    });
+
+    $('#limpiar_usuario').click(function () {
+        objeto = JSON.stringify({
+                 'ip': ips,
+                 })
+        ajax_call("/limpiar_usuario", {
+                object: objeto,
+                _xsrf: getCookie("_xsrf"),
+                async: true,
+              beforeSend: function () {
+                 $("#rproc-loader").fadeIn(800);
+                 $("#new").hide();
+                $('#form3').modal('hide')
+              },
+              success: function () {
+                 $("#rproc-loader").fadeOut(800);
+                 $("#new").show();
+              }
+
+            })
+    });
+{% end %}
+
+
+</script>
+
+{% end %}

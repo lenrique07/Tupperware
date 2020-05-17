@@ -1,0 +1,68 @@
+
+<!-- Bootstrap Select Css -->
+<link href="resources/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
+<div id="form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="submit_imagen" class="new" enctype="multipart/form-data">
+            <form id="role-form" >
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 id="user_tittle" class="modal-title">Ingreso de Configuracion</h3>
+                    <h4 id="user_enable" class=""></h4>
+                </div>
+                <div class="modal-body">
+                     <div id="cliente_form_body" class="box-body">
+                    <div id="id_div" class="form-group">
+                        <div class="form-line col s6">
+                            {% module xsrf_form_html() %}
+                            <input id="id" type="text" class="form-control" disabled="disabled">
+                            <label class="form-label">Configuracion ID</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-float">
+                        <div class="form-line col s6">
+                            <input id="video" type="text" class="form-control " required>
+                            <label class="form-label">Video</label>
+                        </div>
+                    </div>
+                   <div class="form-group form-float">
+                        <div class="form-line col s6">
+                            <input id="facebook" name="facebook" type="text" class="form-control " required>
+                            <label class="form-label">Facebook</label>
+                        </div>
+                   </div>
+
+                    <div class="form-group form-float">
+                        <div class="form-line col s6">
+                            <input id="pagina" type="text" class="form-control " required>
+                            <label class="form-label">Pagina Oficial</label>
+                        </div>
+                    </div>
+                     <div class="form-group form-float">
+                        <div class="form-line col s6">
+                            <input id="twitter" type="text" class="form-control " required>
+                            <label class="form-label">Twitter</label>
+                        </div>
+                    </div>
+                     <div class="form-group form-float">
+                        <div class="form-line col s6">
+                            <input id="otro" type="text" class="form-control " required>
+                            <label class="form-label">Otro</label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                   {% if 'configuracion_update' in privileges %}
+                    <button id="imagen_update2" type="submit" class="btn btn-primary">Modificar</button>
+                   {% end %}
+                </div>
+            </form>
+         </form>
+        </div>
+    </div>
+</div>

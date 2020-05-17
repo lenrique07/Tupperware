@@ -1,0 +1,299 @@
+{% extends ../../../common/views/layout.html %}
+{% block style %}
+{% set user = usuario %}
+<style>
+    .accion {
+        cursor: pointer
+    }
+    .scroll-own{
+        overflow-y: scroll;
+    }
+      .md-dialog-own{
+        width: 60% !important;
+    }
+</style>
+<script src="resources/js/functions.js"></script>
+
+<link href="resources/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
+<script>
+    main_route = '/financiero'
+
+    function default_values() {
+        page_nr = 1
+        max_entries = 10
+        like_search = ""
+        order_by = ""
+        ascendant = true
+    }
+
+    default_values()
+</script>
+{% end %}
+{% block content %}
+
+
+{% if 'financiero_insert' in privileges or 'financiero_update' in privileges %}
+{% include form.html %}
+{% end %}
+
+<div class="header bg-indigo"><h2>Financiero</h2></div>
+<div class="body">
+         <div class="row clearfix">
+            <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+                {% if 'financiero_insert' in privileges %}
+                   <button id="new" type="button" class="btn bg-indigo waves-effect"><i class="material-icons">add</i></button>
+                {% end %}
+            </div>
+         </div>
+
+        <div id="rproc-loader" class="loader-wrapper" style="display: none">
+            <div class="loader loader-own">
+                <div class="preloader preloader-own">
+                    <div class="spinner-layer pl-teal">
+                        <div class="circle-clipper left"><div class="circle"></div></div>
+                        <div class="circle-clipper right"><div class="circle"></div></div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center inf-own">Cargando...</p>
+        </div>
+
+        <div id="rproc-loader" class="loader-wrapper" style="display: none">
+            <div class="loader loader-own">
+                <div class="preloader preloader-own">
+                    <div class="spinner-layer pl-teal">
+                        <div class="circle-clipper left"><div class="circle"></div></div>
+                        <div class="circle-clipper right"><div class="circle"></div></div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center inf-own">Cargando...</p>
+        </div>
+
+    {% if 'financiero_query' in privileges %}
+    <div class="row">
+        <div class="body table-responsive">
+            <table id="data_table" class="table table-bordered table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="order_by_th" data-name="names">Nombre</th>
+                    <th class="order_by_th" data-name="names">Imagen</th>
+                    <th class="actions_header">Acciones</th>
+                </tr>
+                </thead>
+                <tbody id="table_content">
+                {% include 'table.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+    {% end %}
+</div>
+{% end %}
+{% block script %}
+<script src="resources/plugins/momentjs/moment.js"></script>
+<script src="resources/plugins/momentjs/locale/es.js"></script>
+<script src="resources/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+<script src="resources/js/jquery.toast.js"></script>
+
+<script src="resources/plugins/bootstrap-select/js/bootstrap-select.js"></script>
+<!-- Jquery Validation Plugin Css -->
+<!--<script src="resources/plugins/jquery-validation/jquery.validate.js"></script>-->
+<!-- Input Mask Plugin Js -->
+<script src="resources/js/validations.js"></script>
+<script src="resources/plugins/jquery-inputmask/jquery.inputmask.bundle.js"></script>
+<script src="resources/plugins/momentjs/moment.js"></script>
+<script src="resources/plugins/momentjs/locale/es.js"></script>
+<script src="resources/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+<script>
+var ips = ""
+      $(document).ajaxStart(function () {
+        $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
+            ips = data
+        })
+    });
+
+    $(document).ajaxStop(function () {
+        $.Toast.hideToast();
+    });
+
+        $('#data_table').DataTable({
+        /*dom: 'Bfrtip',
+        pageLength: 100,
+        buttons: [
+
+        ],*/language : {
+           "url": "/resources/js/spanish.json"
+       }
+    });
+
+    {#attach_validators()#}
+
+ {% if 'financiero_insert' in privileges %}
+    $('#new').click(function () {
+        $('#nombre').val(''),
+        $('#portada').val(''),
+        {#clean_form()#}
+        verif_inputs()
+        $('#id_div').hide()
+        $('#form').modal('show')
+    });
+
+    $('#imagen_insert').on('click', function (e) {
+
+            var data = new FormData($('#submit_imagen')[0]);
+        if(!validationInputSelects("form")) {
+            objeto = JSON.stringify({
+                 'nombre': $('#nombre').val(),
+                 'ip':  ips,
+            });
+            ruta = "{{privileges['financiero_insert'].route}}";
+            data.append('object', objeto)
+            render = null
+            callback = function () {
+                setTimeout
+                (function () {
+                    window.location = main_route
+                }, 2000);
+            }
+            $.ajax({
+                    url: ruta,
+                    type: "post",
+                    data: data,
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                    async: true,
+                    success: function (response) {
+                      let respuesta = JSON.parse(response);
+                      console.log(respuesta.success)
+                        if (respuesta.success ){
+                            location.reload();
+                             $('#form').modal('hide')
+                        }else {
+                          {
+                          swal({
+                                    title: respuesta.response+"\n"+respuesta.message,
+                                    type: "warning",
+                                })
+                          }
+                        }
+                    }
+                })
+
+         }else {
+            swal(
+                    'Error de datos.',
+                    'Hay campos vacios por favor verifique sus datos.',
+                    'error'
+            )
+        }
+        e.preventDefault();
+        });
+
+    {% end %}
+
+    {% if 'financiero_update' in privileges %}
+    function attach_edit() {
+        $('.edit').click(function () {
+            obj = JSON.stringify({
+                'id': parseInt(JSON.parse($(this).attr('data-json')))
+            });
+          ajax_call_get("{{privileges['financiero_update'].route}}", {
+                _xsrf: getCookie("_xsrf"),
+                object: obj
+            }, function (response) {
+                var self = response;
+                $('#id2').val(self.id),
+                $('#nombre2').val(self.nombre),
+
+                clean_form()
+                verif_inputs2()
+                $('#id_div').hide()
+                $('#insert').hide()
+                $('#update').show()
+                $('#form2').modal('show')
+            })
+        });
+
+        $('#imagen_update').on('click', function (e) {
+            e.preventDefault();
+            var data = new FormData($('#submit_imagen2')[0]);
+            console.log(data)
+//            if (!AllGood()){ return }
+            objeto = JSON.stringify({
+                'id': parseInt($('#id2').val()),
+                'nombre': $('#nombre2').val(),
+                'ip':  ips,
+            });
+            ruta = "{{privileges['financiero_update'].route}}";
+            data.append('object', objeto)
+            data.append('_xsrf',getCookie("_xsrf"))
+            $.ajax({
+                url: ruta,
+                type: "post",
+                data: data,
+                contentType: false,
+                processData: false,
+                cache: false,
+                async: true,
+                success: function (response) {
+                      let respuesta = JSON.parse(response);
+                      console.log(respuesta.success)
+                        if (respuesta.success ){
+                            location.reload();
+                             $('#form').modal('hide')
+                        }else {
+                          {
+                          swal({
+                                    title: respuesta.response+"\n"+respuesta.message,
+                                    type: "warning",
+                                })
+                          }
+                        }
+                    }
+            })
+        });
+    }
+
+    {% end %}
+    reload_form()
+</script>
+<script>
+
+    {% if 'financiero_update' in privileges %}
+    attach_edit()
+    {% end %}
+
+    {% if 'financiero_delete' in privileges %}
+    $('.delete').click(function () {
+        objeto = JSON.stringify({
+            'id':  parseInt(JSON.parse($(this).attr('data-json'))),
+            'enabled': false,
+            'ip':  ips,
+        });
+        swal({
+            title: "¿Desea dar de baja el financiero?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#673AB7",
+            cancelButtonColor: "#F44336",
+            confirmButtonText: "Aceptar",
+            cancelButtonText: "Cancelar"
+        }).then(function () {
+            ajax_call("{{privileges['financiero_delete'].route}}", {
+                object: objeto,
+                _xsrf: getCookie("_xsrf")
+            }, null, function () {
+                setTimeout(function () {
+                    window.location = main_route
+                }, 2000);
+            })
+        })
+    });
+    {% end %}
+</script>
+
+{% end %}

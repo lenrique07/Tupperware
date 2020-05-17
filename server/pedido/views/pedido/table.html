@@ -1,0 +1,18 @@
+
+{% for c in objects %}
+<tr>
+    <td>{{ c.id }}</td>
+    <td>{{ c.fecha }}</td>
+    <td>{{ c.retail }}</td>
+    <td>{{ c.fkusuario }}</td>
+
+    <td align="center">
+        {% if 'pedido_update' in privileges %}
+        <button id="edit" data-json="{{c.id}}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>
+        {% end %}
+        {% if 'pedido_delete' in privileges %}
+        <button id="delete" data-json="{{c.id}}" type="button" class="btn bg-red waves-effect waves-light delete" title="Eliminar"><i class="material-icons">clear</i></button>
+        {% end %}
+    </td>
+</tr>
+{% end %}

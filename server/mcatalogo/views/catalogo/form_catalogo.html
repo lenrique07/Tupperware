@@ -1,0 +1,109 @@
+
+<div id="form_catalogo" class="modal fade" tabindex="-1" role="dialog"  data-backdrop="static" aria-labelledby="myModalLabel">
+    <div class="modal-dialog md-dialog-own" role="document">
+        <div class="modal-content">
+            <form id="submit_imagen_catalogo" class="new" enctype="multipart/form-data">
+            <form id="role-form_catalogo" >
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 id="user_tittle" class="modal-title">Detalle del Catálogo</h3>
+                    <h4 id="user_enable" class=""></h4>
+                </div>
+                <div class="modal-body">
+                     <div id="cliente_form_body" class="box-body">
+                        <div id="id_div_catalogo" class="form-group">
+                            <div class="form-line col s6">
+                                {% module xsrf_form_html() %}
+                                <input id="id_catalogo" type="text" class="form-control" disabled="disabled">
+                                <label class="form-label">catalogo ID</label>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                          <div class="col-sm-3">
+                              <div class="form-group form-float">
+                                <label class="form-label">Gestión</label>
+                                  <div class="form-line  col s6">
+                                      <input id="Gestion_catalogo" type="text" class="form-control int32" disabled="disabled">
+                                  </div>
+                              </div>
+
+                               <div class="form-group">
+                                 <label class="form-label">Fecha Inicial</label>
+                                  <div class="form-line">
+
+                                      <input id="FechaInicio_catalogo" name="FechaInicio" type="text"  class="form-control date" disabled="disabled">
+                                  </div>
+                              </div>
+
+                              <div class="form-group form-float">
+                                <label class="form-label">Número de Páginas</label>
+                                  <div class="form-line  col s6">
+                                      <input id="NumeroPaginas_catalogo" type="text" class="form-control int32" disabled="disabled">
+
+                                  </div>
+                              </div>
+
+
+
+                          </div>
+                          <div class="col-sm-3">
+                              <div class="form-group form-float">
+                                <label class="form-label">Nro de Catálogo</label>
+                                  <div class="form-line">
+                                      <input id="Numerocatalogo_catalogo" type="text" class="form-control" disabled="disabled">
+                                  </div>
+                              </div>
+                              <div class="form-group">
+                                 <label class="form-label">Fecha Finalización</label>
+                                  <div class="form-line">
+                                      <input id="FechaFinal_catalogo" name="FechaFinal" type="text" class="form-control date" disabled="disabled">
+                                  </div>
+                              </div>
+                               <div class="form-group form-float">
+                                 <label class="form-label">Estado</label>
+                                  <div class="form-line">
+                                      <select id="Estado_catalogo" name="Estado" class="form-control show-tick" disabled="disabled" >
+                                          <option value="">--Estado--</option>
+                                          <option value="1">--Habilitado--</option>
+                                          <option value="0">--Desabilitado--</option>
+                                      </select>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="col-sm-4">
+                            <div class="form-group">
+                                <label>Portada</label>
+                                <div id="imagen_archivo_catalogo" class="row m-b-20">
+                                    <div class="text-center">
+                                        <img id='imagen_show_img_catalogo' src='' width='150px'>
+                                        </br>
+                                        </br>
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+
+                   <div class="col-xs-12"><label class="modal-title">Páginas </label></div>
+
+                    <div id="paginas" class="box-body">
+                        <div id="table_paginas" class="clearfix">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+{#                  {% if 'catalogo_insert' in privileges %}#}
+                    <button id="imagen_insert_catalogo" type="submit" class="btn btn-primary">Guardar</button>
+{#                   {% end %}#}
+                </div>
+            </form>
+         </form>
+        </div>
+    </div>
+</div>

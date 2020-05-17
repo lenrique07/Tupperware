@@ -1,0 +1,19 @@
+
+{% for c in objects %}
+<tr>
+    <td>{{ c.video}}</td>
+    <td>{{ c.facebook}}</td>
+    <td>{{ c.pagina}}</td>
+    <td>{{ c.twitter}}</td>
+    <td>{{ c.otro}}</td>
+    <td align="center">
+        {% if 'configuracion_update' in privileges %}
+        <button id="edit" data-json="{{c.id}}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>
+        {% end %}
+
+
+    </td>
+</tr>
+{% end %}
+
+

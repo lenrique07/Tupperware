@@ -1,0 +1,24 @@
+
+{% for c in objects %}
+<tr>
+    <td>{{ c.catalogo.Gestion }}</td>
+    <td>{{ c.catalogo.Numerocatalogo }}</td>
+    <td>{{ c.numero}}</td>
+    {% if c.portada==" " %}
+    <td><img src="resources/images/sinImagen.jpg" alt="" style="width: 100px; height: 60px;"/></td>
+    {% else%}
+    <td><img src="{{ c.portada }}" alt="" style="width: 100px; height: 60px;"/></td>
+    {% end%}
+
+    <td align="center">
+        {% if 'pagina_update' in privileges %}
+        <button id="edit" data-json="{{c.id}}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>
+        {% end %}
+        {% if 'pagina_delete' in privileges %}
+        <button id="delete" data-json="{{c.id}}" type="button" class="btn bg-red waves-effect waves-light delete" title="Eliminar"><i class="material-icons">clear</i></button>
+        {% end %}
+    </td>
+</tr>
+{% end %}
+
+

@@ -1,0 +1,34 @@
+
+{% for c in objects %}
+<tr>
+    <td>{{ c.Gestion}}</td>
+    <td>{{ c.Numerocatalogo}}</td>
+    <td>{{ c.NumeroPaginas}}</td>
+        {% if c.portada==" " %}
+    <td><img src="resources/images/sinImagen.jpg" alt="" style="width: 100px; height: 60px;"/></td>
+        {% else%}
+    <td><img src="{{ c.portada }}" alt="" style="width: 100px; height: 60px;"/></td>
+        {% end%}
+    <td>{{ c.FechaInicio}}</td>
+    <td>{{ c.FechaFinal}}</td>
+        {% if c.Estado == 1 %}
+    <td>Habilitado</td>
+        {% else  %}
+    <td>Desabilitado</td>
+        {% end %}
+
+    <td align="center">
+        {% if 'catalogo_update' in privileges %}
+        <button id="edit" data-json="{{c.id}}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>
+        {% end %}
+        {% if 'catalogo_delete' in privileges %}
+        <button id="delete" data-json="{{c.id}}" type="button" class="btn bg-red waves-effect waves-light delete" title="Eliminar"><i class="material-icons">clear</i></button>
+        {% end %}
+        {% if 'catalogo_insert' in privileges %}
+        <button id="pagina" data-json="{{c.id}}" type="button" class="btn bg-indigo waves-effect waves-light paginas" title="pagina"><i class="material-icons">search</i></button>
+        {% end %}
+    </td>
+</tr>
+{% end %}
+
+

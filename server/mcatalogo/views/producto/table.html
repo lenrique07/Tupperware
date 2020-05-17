@@ -1,0 +1,46 @@
+
+{% for c in objects %}
+<tr>
+{#     <td>{{ c.id }}</td>#}
+    <td>{{ c.gestion }}</td>
+    {% for cat in catalogo %}
+        {% if cat.id==c.catalogo %}
+            <td>{{ cat.Numerocatalogo }}</td>
+        {% end %}
+    {% end %}
+
+    <td>{{ c.pagina}}</td>
+    <td>{{ c.nombre}}</td>
+    <td>{{ c.codigo}}</td>
+    <td>{{ c.codvta}}</td>
+      {% if c.foto==" " %}
+        <td><img src="resources/images/sinImagen.jpg" alt="" style="width: 100px; height: 60px;"/></td>
+        {% else%}
+        <td><img src="{{ c.foto }}" alt="" style="width: 100px; height: 60px;"/></td>
+      {% end%}
+    <td>{{ c.precio}}</td>
+    <td>{{ c.prepro}}</td>
+    <td>{{ c.bonifi}}</td>
+    <td>{{ c.retail}}</td>
+    {% if c.remplazo==None %}
+        <td id="id{{c.id}}"> No reemplaza a ningún producto </td>
+    {% else%}
+        {% for p in producto %}
+          {% if p.id==c.remplazo %}
+        <td id="id{{c.id}}">{{p.nombre}}</td>
+          {% end%}
+        {% end %}
+    {% end%}
+    <td align="center">
+        {% if 'producto_update' in privileges %}
+        <button id="edit" data-json="{{c.id}}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>
+        {% end %}
+        {% if 'producto_delete' in privileges %}
+        <button id="delete" data-json="{{c.id}}" type="button" class="btn bg-red waves-effect waves-light delete" title="Eliminar"><i class="material-icons">clear</i></button>
+        {% end %}
+    </td>
+</tr>
+{% end %}
+
+
+

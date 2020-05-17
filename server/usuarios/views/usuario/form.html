@@ -1,0 +1,270 @@
+<div id="form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="submit_imagen" class="new" enctype="multipart/form-data">
+            <form id="role-form" >
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h3 id="user_tittle" class="modal-title">Usuario</h3>
+                  <h4 id="user_enable" class=""></h4>
+              </div>
+              <div class="modal-body">
+                  <div id="user_form_body" class="box-body">
+                      <div id="id_div" class="form-group">
+                          <div class="form-line">
+                              {% module xsrf_form_html() %}
+                              <input id="id" type="text" class="form-control" disabled="disabled">
+                              <label class="form-label">Usuario ID</label>
+                          </div>
+                      </div>
+
+
+                      <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="nombre" type="text" class="form-control name" required>
+                              <label class="form-label">Nombre</label>
+                          </div>
+                      </div>
+
+
+
+                      <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="apellido" type="text" class="form-control name" required>
+                              <label class="form-label">Apellidos</label>
+                          </div>
+                      </div>
+                      <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="correo" type="text" class="form-control mail" >
+                              <label class="form-label">Correo electrónico</label>
+                          </div>
+                      </div>
+                      <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="username" type="text" class="form-control username" required>
+                              <label class="form-label">Nombre de usuario</label>
+                          </div>
+                      </div>
+
+                      <div id="pass">
+                      <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="password" type="password" class="form-control password" required>
+                              <label class="form-label">Contraseña</label>
+                          </div>
+                      </div>
+                      </div>
+                      <label>Rol</label>
+                      <select id="role_id" class="form-control" required>
+                      {% for role in roles %}
+                          <option value="{{role.id}}">{{role.nombre}}</option>
+                      {% end %}
+                      </select>
+                  </div>
+
+                    <div class="row">
+                          <div class="col-sm-6">
+                              <div class="nfoto">
+                                  <label>Foto Actual</label>
+                                  <div id="imagen_archivo" class="row m-b-20">
+                                      <div class="text-center">
+                                          <img id='imagen_show_img' src='' width='250px'>
+                                          </br>
+                                          </br>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+
+                          <div class="row">
+                              <div class="col-sm-4">
+                                  <label class="form-label">Nueva Foto: </label>
+                                  <input id="archivo" name="archivo" type="file" class="file form-control"
+                                         width='300px'/>
+                                  </br>
+                                  </br>
+                              </div>
+                          </div>
+
+                      </div>
+              </div>
+              <div class="modal-footer">
+                  {% if 'usuario_insert' in privileges %}
+
+                  <button id="imagen_insert" type="submit" class="btn btn-primary">Guardar</button>
+
+                  {% end %}
+              </div>
+              </form>
+         </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div id="form2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="submit_imagen2" class="new" enctype="multipart/form-data">
+            <form id="role-form" >
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h3 id="user_tittle2" class="modal-title">Usuario</h3>
+                  <h4 id="user_enable2" class=""></h4>
+              </div>
+              <div class="modal-body">
+                  <div id="user_form_body" class="box-body">
+                      <div id="id_div2" class="form-group">
+                          <div class="form-line">
+                              {% module xsrf_form_html() %}
+                              <input id="id2" type="text" class="form-control" disabled="disabled">
+                              <label class="form-label">Usuario ID</label>
+                          </div>
+                      </div>
+
+
+                      <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="nombre2" type="text" class="form-control name" required>
+                              <label class="form-label">Nombre</label>
+                          </div>
+                      </div>
+
+
+
+                      <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="apellido2" type="text" class="form-control name" required>
+                              <label class="form-label">Apellidos</label>
+                          </div>
+                      </div>
+                      <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="correo2" type="text" class="form-control mail" >
+                              <label class="form-label">Correo electrónico</label>
+                          </div>
+                      </div>
+                      <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="username2" type="text" class="form-control username" required>
+                              <label class="form-label">Nombre de usuario</label>
+                          </div>
+                      </div>
+
+                      <div id="pass">
+                      <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="password2" type="password" class="form-control password">
+                              <label class="form-label">Contraseña</label>
+                          </div>
+                      </div>
+                      </div>
+                      <label>Rol</label>
+                      <select id="role_id2" class="form-control" required>
+                      {% for role in roles %}
+                          <option value="{{role.id}}">{{role.nombre}}</option>
+                      {% end %}
+                      </select>
+                  </div>
+
+                    <div class="row">
+                          <div class="col-sm-6">
+                              <div class="nfoto">
+                                  <label>Foto Actual</label>
+                                  <div id="imagen_archivo2" class="row m-b-20">
+                                      <div class="text-center">
+                                          <img id='imagen_show_img2' src='' width='250px'>
+                                          </br>
+                                          </br>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+
+                          <div class="row">
+                              <div class="col-sm-4">
+                                  <label class="form-label">Nueva Foto: </label>
+                                  <input id="archivo2" name="archivo" type="file" class="file form-control"
+                                         width='300px'/>
+                                  </br>
+                                  </br>
+                              </div>
+                          </div>
+
+                      </div>
+              </div>
+              <div class="modal-footer">
+                  {% if 'usuario_update' in privileges %}
+                  <button id="imagen_update" type="submit" class="btn btn-primary">Actualizar</button>
+                  {% end %}
+              </div>
+              </form>
+         </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="modificar_password" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 id="user_tittle" class="modal-title">Modificar contraseña</h3>
+                <h4 id="user_enable" class=""></h4>
+            </div>
+            <div class="modal-body">
+                <div id="user_form_body" class="box-body">
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="new_pass" type="text" class="form-control">
+                            <input id="id_usuario" type="hidden" class="form-control">
+                            <label class="form-label">Nueva contraseña</label>
+                        </div>
+                    </div>
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="new_rpass" type="text" class="form-control">
+                            <label class="form-label">Repita la contraseña</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modify_pass" type="button" class="btn btn-primary" data-dismiss="modal" onclick="Modificar_Contraseña();"><i class="material-icons">save</i> Guardar</button>
+                <button id="close" type="button" class="btn btn-danger" data-dismiss="modal"><i class="material-icons">delete</i> Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,16 @@
+
+{% for c in objects %}
+<tr>
+    <td>{{ c.id }}</td>
+    {%if c.fkusuario is not None %}
+    <td>{{ c.usuario.nombre+" " }}{{ c.usuario.apellido }}</td>
+    {% end %}
+    {%if c.fkusuario is None %}
+    <td>Cliente</td>
+    {% end %}
+    <td>{{ c.accion }}</td>
+    <td>{{ c.ip }}</td>
+    <td>{{ c.fecha.strftime("%d/%m/%Y %H:%M:%S") }}</td>
+</tr>
+{% end %}
+

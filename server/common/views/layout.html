@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>Tupperware/Deslumbrantes</title>
+
+    <link href="/resources/css/iconfont/material-icons.css" rel="stylesheet">
+    <link href="/resources/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/resources/plugins/node-waves/waves.css" rel="stylesheet" />
+    <link href="/resources/plugins/fileinput/css/fileinput.min.css" rel="stylesheet" />
+    <link href="/resources/plugins/animate-css/animate.css" rel="stylesheet" />
+    <link href="/resources/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
+    <link href="/resources/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet" />
+    <link href="/resources/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <link href="/resources/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet">
+    <link href="/resources/css/style.css" rel="stylesheet">
+    <link href="/resources/css/themes/all-themes.css" rel="stylesheet" />
+    <link href="/resources/plugins/nestable/jquery-nestable.css" rel="stylesheet">
+    <link href="/resources/css/main.css" rel="stylesheet" />
+    <link href="/resources/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
+    <style>
+        .nav-img {
+            height: 24px;
+            padding: 0px;
+            width: auto;
+        }
+        .buttons-print {
+            background-color: #096b65;
+            color: white;
+        }
+        .buttons-excel {
+            background-color: #096b65;
+            color: white;
+        }
+        .bg-blue-dark-own{
+        background-color: #096b65;
+        }
+
+        .white-own{
+            color: white !important;
+        }
+    </style>
+    {%block style%}{%end %}
+</head>
+<body class="">
+    <div class="page-loader-wrapper">
+        <div class="loader">
+            <div class="preloader">
+                <div class="spinner-layer pl-teal">
+                    <div class="circle-clipper left"><div class="circle"></div></div>
+                    <div class="circle-clipper right"><div class="circle"></div></div>
+                </div>
+            </div>
+            <p>Por favor espere.</p>
+        </div>
+    </div>
+    <div class="overlay"></div>
+    <nav class="navbar bg-blue-dark-own">
+        <div class="container-fluid">
+            <div class="navbar-header ">
+                <a href="javascript:void(0);" class="bars white-color"></a>
+                <a href="/" class="navbar-brand white-own" style="padding: 0">
+
+                      <img src="resources/images/TupperwareBlanco.png" alt="" style="height: 45px;">
+
+                </a>
+            </div>
+            <div id="right-options" class="more-options">
+                <ul class="header-dropdown m-r--5">
+                    <li class="dropdown">
+<!--                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true" alt="Manual" title="Manual" onclick="manual()">
+                            <i class="material-icons">assignment</i>
+                        </a>-->
+                        <a href=""><i class="material-icons"> </i></a>
+                        <a href=""><i class="material-icons"> </i></a>
+                        <a href=""><i class="material-icons"> </i></a>
+                        <a href="/usuario_profile"><i class="material-icons" title="Perfil de usuario">account_circle</i></a>
+                        <a href=""><i class="material-icons"> </i></a>
+                        <a href=""><i class="material-icons"> </i></a>
+                        <a href=""><i class="material-icons"> </i></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true" title="Cerrar sesión" alt="Cerrar Sesion" onclick="Salir()">
+                            <i class="material-icons">power_settings_new</i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+<section>
+        <aside id="leftsidebar" class="sidebar">
+            <div class="menu">
+                <ul class="list">
+                    {% for mods in user.rol.modulos %}
+                        {% set mods = [mods] %}
+                        {% set parents_ids = [] %}
+                        {% while len(mods) > 0 %}
+                            {% set module = mods.pop() %}
+                            {% if not module.menu %}
+                                {% set continue %}
+                            {% end %}
+                            {% while len(parents_ids) > 0 and parents_ids[-1] != module.fkmodulo %}
+                                </ul>
+                            </li>
+                            {% set del(parents_ids[-1]) %}
+                            {% end %}
+
+                            {% if module.route %}
+                                {% set url = module.route %}
+                            {% else %}
+                                {% set url = '#' %}
+                            {% end %}
+
+                            {% if len(module.children) <= 0 or url != '#' %}
+                                {% if module.name != 'perfil' %}
+                                <li><a href="{{url}}" class=""><i class="material-icons" title="{{module.title}}">{{module.icon}}</i><span>{{module.title}}</span></a></li>
+                                {% end %}
+                            {% else %}
+                                {% set mods.extend(module.children[::-1]) %}
+                                {% set parents_ids.append(module.id) %}
+                                <li><a href="{{url}}" class="menu-toggle"><i class="material-icons" title="{{module.title}}">{{module.icon}}</i><span>{{module.title}}</span></a>
+                                    <ul class="ml-menu">
+                            {% end %}
+                        {% end %}
+                        {% if len(parents_ids) > 0  %}
+                            </ul>
+                        </li>
+                        {% end %}
+                    {% end %}
+                </ul>
+            </div>
+        </aside>
+    </section>
+    <section id="content" class="content">
+        <div class="container-fluid">
+            <div class="block-header">
+                <div class="card" id="render_content">
+                    {%block content%}{%end%}
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="/resources/js/customValidation.js"></script>
+    <script src="/resources/plugins/jquery/jquery.min.js"></script>
+    <script src="/resources/plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
+    <script src="/resources/plugins/bootstrap/js/bootstrap.js"></script>
+    <script src="/resources/plugins/node-waves/waves.js"></script>
+    <script src="/resources/js/admin.js"></script>
+    <script src="/resources/plugins/momentjs/moment.js"></script>
+    <script src="/resources/plugins/bootstrap-notify/bootstrap-notify.js"></script>
+    <script src="/resources/plugins/fileinput/js/fileinput.min.js"></script>
+    <script src="/resources/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="/resources/plugins/bootstrap-select/js/bootstrap-select.js"></script>
+<!--    <script src="/resources/plugins/jquery-validation/jquery.validate.js"></script>-->
+    <script src="/resources/plugins/nestable/jquery.nestable.js"></script>
+    <script src="/resources/js/jquery.toast.js"></script>
+    <!-- Jquery DataTable Plugin Js -->
+    <script src="/resources/plugins/jquery-datatable/jquery.dataTables.js"></script>
+    <script src="/resources/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
+    <script src="/resources/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js"></script>
+    <script src="/resources/plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>
+    <script src="/resources/plugins/jquery-datatable/extensions/export/jszip.min.js"></script>
+    <script src="/resources/plugins/jquery-datatable/extensions/export/vfs_fonts.js"></script>
+    <script src="/resources/plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
+    <script src="/resources/plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>
+    <script src="/resources/js/pages/tables/jquery-datatable.js"></script>
+    <script src="/resources/js/scripts.js"></script>
+    <script src="/resources/js/validations.js"></script>
+    <script src="/resources/plugins/bootstrap-select/js/bootstrap-select.js"></script>
+    <script src="/resources/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+    <script src="/resources/plugins/bootstrap-material-datetimepicker/js/moment-with-locales.min.js"></script>
+    {#    <script src="/resources/plugins/jquery-datatable/jquery.dataTables.js"></script>#}
+    <script src="/resources/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
+    <script src="/resources/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js"></script>
+    <script src="/resources/plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>
+    <script src="/resources/plugins/jquery-datatable/extensions/export/jszip.min.js"></script>
+    <script src="/resources/plugins/jquery-datatable/extensions/export/vfs_fonts.js"></script>
+    <script src="/resources/plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
+    <script src="/resources/plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>
+    <script src="resources/plugins/jquery-inputmask/jquery.inputmask.bundle.js"></script>
+    <script>
+        var ips = ""
+        $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
+            ips = data
+        })
+
+        function  Salir() {
+            swal({
+                title: "¿Desea cerrar sesión?",
+                imageUrl: 'resources/images/Tupperware.png',
+                showCancelButton: true,
+                confirmButtonColor: "#0B1D50",
+                cancelButtonColor: "#F44336",
+                confirmButtonText: "Aceptar",
+                reverseButtons: true,
+                cancelButtonText: "Cancelar"
+            }).then(function () {
+                console.log("salir")
+                swal(
+                      'Gracias por tu trabajo.',
+                      'Vuelve pronto.',
+                      'success'
+                )
+                setTimeout(function () {
+                    window.location="/logout?ip="+ips
+                }, 2000);
+            })
+        }
+
+
+        function  manual() {
+            swal({
+                title: "¿Desea ver el manual?",
+                imageUrl: 'resources/images/Tupperware.png',
+                showCancelButton: true,
+                confirmButtonColor: "#0B1D50",
+                cancelButtonColor: "#F44336",
+                confirmButtonText: "Aceptar",
+                reverseButtons: true,
+                cancelButtonText: "Cancelar"
+            }).then(function () {
+                swal(
+                      'Manual cargado exitosamente.',
+                      '',
+                      'success'
+                    )
+                setTimeout(function () {
+                    window.location="/manual"
+                }, 2000);
+            })
+        }
+    </script>
+    {%block script%}{%end%}
+</body>
+</html>

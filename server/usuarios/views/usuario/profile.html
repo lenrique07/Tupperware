@@ -1,0 +1,290 @@
+{%extends ../../../common/views/layout.html%}
+{%block style%}
+<style>
+    .accion{ cursor:pointer }
+
+    .green-own{
+        background-color: #95c11f !important;
+    }
+
+    .white-own{
+            color: white !important;
+        }
+    .button-green-own{
+        background-color: #044f17;
+    }
+</style>
+<script src="resources/js/functions.js"></script>
+
+<script>
+    main_route = '/usuario_profile'
+
+    function default_values() {
+        page_nr = 1
+        max_entries = 10
+        like_search = ""
+        order_by = ""
+        ascendant = true
+    }
+    default_values()
+</script>
+{%end%}
+{%block content%}
+<div class="header">
+    <h2>
+        PERFIL DE USUARIO
+    </h2>
+</div>
+<div class="body">
+    <form class="form-horizontal">
+        <input type="hidden" value="{{profile.id}}" id="user_id">
+        <div class="row clearfix">
+            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-5 form-control-label">
+                <label for="name_profile">Nombre</label>
+            </div>
+            <div class="col-lg-10 col-md-10 col-sm-8 col-xs-7">
+                <div class="form-group">
+                    <div class="form-line">
+                        <input type="text" id="nombre_profile" class="form-control" value="{{profile.nombre}}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-5 form-control-label">
+                <label for="name_profile">Apellido</label>
+            </div>
+            <div class="col-lg-10 col-md-10 col-sm-8 col-xs-7">
+                <div class="form-group">
+                    <div class="form-line">
+                        <input type="text" id="apellido_profile" class="form-control" value="{{profile.apellido}}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-5 form-control-label">
+                <label for="name_profile">Correo electrónico</label>
+            </div>
+            <div class="col-lg-10 col-md-10 col-sm-8 col-xs-7">
+                <div class="form-group">
+                    <div class="form-line">
+                        <input type="text" id="correo_profile" class="form-control" value="{{profile.correo}}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-5 form-control-label">
+                <label for="name_empresa_profile">Rol</label>
+            </div>
+            <div class="col-lg-10 col-md-10 col-sm-8 col-xs-7">
+                <div class="form-group">
+                    <div class="form-line">
+                        <input type="text" id="rol_profile" class="form-control" value="{{profile.rol.nombre}}" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-2 col-md-2 col-sm-4 col-xs-5 form-control-label">
+                <label for="username_profile">Nombre de usuario</label>
+            </div>
+            <div class="col-lg-10 col-md-10 col-sm-8 col-xs-7">
+                <div class="form-group">
+                    <div class="form-line">
+                        <input type="text" id="username_profile" class="form-control" value="{{profile.username}}" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-offset-2 col-md-offset-2 col-sm-offset-4 col-xs-offset-5">
+                <button type="button" class="btn button-green-own m-t-15 waves-effect white-own" onclick="Modificar_Perfil();">Guardar</button>
+                <button type="button" class="btn button-green-own m-t-15 waves-effect white-own" onclick="Open_Modal_Pass();">Modificar contraseña</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="modal_modificar_password" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 id="user_tittle" class="modal-title">Modificar contraseña</h3>
+                <h4 id="user_enable" class=""></h4>
+            </div>
+            <div class="modal-body">
+                <div id="user_form_body" class="box-body">
+                    <div id="id_div" class="input-group">
+                        <div class="form-line">
+                            <input id="actual_pass" type="password" class="form-control" placeholder="Contraseña actual">
+                        </div>
+                        <span class="input-group-addon" id="see-pass" style="cursor: pointer;" title="Mostrar">
+                            <i class="material-icons" style="color: grey" id="ic-pass">visibility_off</i>
+                        </span>
+                    </div>
+                    <div class="input-group">
+                        <div class="form-line">
+                            <input id="new_pass" type="password" class="form-control" placeholder="Nueva contraseña">
+                        </div>
+                        <span class="input-group-addon" id="see-pass-nc" style="cursor: pointer;" title="Mostrar">
+                            <i class="material-icons" style="color: grey" id="ic-pass-nc">visibility_off</i>
+                        </span>
+                    </div>
+                    <div class="input-group">
+                        <div class="form-line">
+                            <input id="new_rpass" type="password" class="form-control" placeholder="Repita su contraseña">
+                        </div>
+                        <span class="input-group-addon" id="see-pass-ncr" style="cursor: pointer;" title="Mostrar">
+                            <i class="material-icons" style="color: grey" id="ic-pass-ncr">visibility_off</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modify_pass" type="button" class="btn bg-blue" data-dismiss="modal" onclick="Modificar_Password();"><i class="material-icons">save</i> Guardar</button>
+                <button id="close" type="button" class="btn btn-danger" data-dismiss="modal"><i class="material-icons">delete</i> Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{%end%}
+{% block script %}
+<script>
+var ips = ""
+      $(document).ajaxStart(function () {
+        $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
+            ips = data
+        })
+    });
+    $('#modal_modificar_password').on('shown.bs.modal', function () {
+        $('#actual_pass').focus();
+    })
+
+    function Open_Modal_Pass()
+    {
+        $('#actual_pass').val('')
+        $('#new_pass').val('')
+        $('#new_rpass').val('')
+        $('#actual_pass').parent().addClass('focused')
+        $('#new_pass').parent().addClass('focused')
+        $('#new_rpass').parent().addClass('focused')
+        $('#actual_pass').focus()
+        $('#modal_modificar_password').modal('show');
+    }
+
+    function Modificar_Password()
+    {
+        id = $('#user_id').val()
+        actual = $('#actual_pass').val()
+        newp = $('#new_pass').val()
+        newp1 = $('#new_rpass').val()
+        objeto =JSON.stringify({'id' : id,'old_password' : actual,'new_password' : newp, 'new_password_2':newp1})
+        if(newp==newp1)
+        {
+            $.ajax({
+                url: "/usuario_update_password",
+                type: "post",
+                data: {object:objeto, _xsrf: getCookie("_xsrf")},
+            }).done(function (response) {
+                    valor=JSON.parse(response)
+                    if(valor.success)
+                    {
+                        swal(
+                            'Contraseña modificada.',
+                            'Se modificó la contraseña correctamente.',
+                            'success'
+                          )
+                    }
+                    else
+                    {
+                        swal(
+                            'Contraseña actual errónea.',
+                            'No se modificó la contraseña.',
+                            'error'
+                          )
+                    }
+            })
+        }
+        else
+        {
+            swal(
+                'Error de datos.',
+                'Las contraseñas no coinciden.',
+                'error'
+              )
+        }
+    }
+
+    function Modificar_Perfil()
+    {
+        id = $('#user_id').val()
+        correo = $('#correo_profile').val()
+        nombre = $('#nombre_profile').val()
+        apellido = $('#apellido_profile').val()
+        objeto =JSON.stringify({'id' : id,'nombre' : nombre,'apellido' : apellido,'correo':correo,'ip':ips})
+        $.ajax({
+                url: "/usuario_update_profile",
+                type: "post",
+                data: {object:objeto, _xsrf: getCookie("_xsrf")},
+            }).done(function (response) {
+                    valor=JSON.parse(response)
+                    if(valor.success)
+                    {
+                        swal(
+                            'Perfil modificado.',
+                            'Se modificó el perfil de usuario correctamente.',
+                            'success'
+                          )
+                    }
+                    else
+                    {
+                        swal(
+                            'Perfil no modificado.',
+                            'No se modificó el perfil de usuario.',
+                            'error'
+                          )
+                    }
+            })
+    }
+
+    $('#see-pass').mousedown(function(){
+        $("#ic-pass").css("color", "lightgrey");
+        $("#actual_pass").prop("type", "text");
+        $("#ic-pass").html("visibility");
+    });
+
+    $("#see-pass").mouseup(function(){
+        $("#ic-pass").css("color", "grey");
+        $("#actual_pass").prop("type", "password");
+        $("#ic-pass").html("visibility_off");
+    });
+
+    $('#see-pass-nc').mousedown(function(){
+        $("#ic-pass-nc").css("color", "lightgrey");
+        $("#new_pass").prop("type", "text");
+        $("#ic-pass-nc").html("visibility");
+    });
+
+    $("#see-pass-nc").mouseup(function(){
+        $("#ic-pass-nc").css("color", "grey");
+        $("#new_pass").prop("type", "password");
+        $("#ic-pass-nc").html("visibility_off");
+    });
+
+    $('#see-pass-ncr').mousedown(function(){
+        $("#ic-pass-ncr").css("color", "lightgrey");
+        $("#new_rpass").prop("type", "text");
+        $("#ic-pass-ncr").html("visibility");
+    });
+
+    $("#see-pass-ncr").mouseup(function(){
+        $("#ic-pass-ncr").css("color", "grey");
+        $("#new_rpass").prop("type", "password");
+        $("#ic-pass-ncr").html("visibility_off");
+    });
+</script>
+{%end%}

@@ -1,0 +1,17 @@
+{% for role in objects %}
+<tr>
+    <td>{{ role.nombre }}</td>
+    <td>{{ role.descripcion }}</td>
+    <td align="center">
+        <div {%if role.enabled%} title="Activo" {% else %} title="Inhabilitado" {% end %}>
+            <input id="enabled{{role.id}}" type="checkbox" class="chk-col-indigo enabled" data-id="{{role.id}}" {% if role.enabled %} {{"checked"}} {% end %} {% if 'rol_update' not in privileges %} {{"disabled"}} {% end %}>
+            <label for="enabled{{role.id}}"></label>
+        </div>
+    </td>
+    <td align="center">
+        {% if 'rol_update' in privileges %}
+        <button id="edit" data-json="{{role.id}}" type="button" class="btn button-green-own waves-effect waves-light edit blanco" title="Editar"><i class="material-icons white-own">create</i></button>
+        {% end %}
+    </td>
+</tr>
+{% end %}

@@ -1,0 +1,279 @@
+{%extends ../../../common/views/layout.html%}
+{%block style%}
+{% set user = usuario %}
+{%end%}
+{%block content%}
+<style>
+    .accion{ cursor:pointer }
+
+    .green-own{
+        background-color: #95c11f;
+    }
+
+    .titulo-verde-own{
+        color: #044f17 !important;
+    }
+
+    .button-green-own{
+        background-color: #0B1D50;
+
+    }
+
+    .blanco{
+        color: white !important;
+
+    }
+        .title-rg-own{
+        font-weight: bolder !important;
+        color: #044f17 !important;
+    }
+</style>
+<script src="resources/js/functions.js"></script>
+
+<script>
+    main_route = '/rol'
+
+</script>
+
+{% if 'rol_insert' in privileges or 'rol_update' in privileges %}
+{% include form.html %}
+{% end %}
+
+<div class="header "><h2 class="title-rg-own">ROL</h2></div>
+<div class="body">
+    <div class="row clearfix">
+        <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+        {% if 'rol_insert' in privileges %}
+            <button id="new" type="button" class="btn bg-indigo waves-effect" title="Nuevo">
+            <i class="material-icons blanco">add</i>
+            </button>
+        {% end %}
+        </div>
+        {% if 'rol_query' in privileges %}
+    </div>
+    <div class="row">
+        <div class="body table-responsive">
+            <table id="data_table" class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th class="order_by_th accion" data-name="name">Nombre </th>
+                        <th class="order_by_th accion" data-name="description">Descripción </th>
+                        <th class="order_by_th accion" data-name="description">Estado </th>
+                        <th class="actions_header">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="table_content">
+                    {% include 'table.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+    {% end %}
+
+</div>
+{%end%}
+{% block script%}
+<script src="resources/js/validations.js"></script>
+<script>
+     var ips = ""
+      $(document).ajaxStart(function () {
+        $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
+            ips = data
+        })
+    });
+
+
+    $(document).ready( function () {
+        $('#data_table').DataTable({
+            language : {
+                "url": "/resources/js/spanish.json"
+            }
+        });
+    });
+    validationKeyup("form")
+
+    {#attach_validators()#}
+    function analizar(parent) {
+        children = $(parent).next().next().find('.module:checked')
+        $(parent).prop('checked', (children.length > 0))
+        grand_parent = $(parent).parent().closest('.tree-menu').prev().prev()
+        if (grand_parent.length > 0){
+            analizar(grand_parent)
+        }
+    }
+
+    $('.module').click(function () {
+        aux = $(this).attr('id')
+        if((aux.indexOf('insert')!==-1 || aux.indexOf('update')!==-1 || aux.indexOf('delete')!==1) && $(this).is(':checked')){
+            aux1 = aux.replace('insert', 'query')
+            aux1 = aux1.replace('update', 'query')
+            aux1 = aux1.replace('delete', 'query')
+            $('#'+aux1).prop('checked', true)
+        }
+
+        if(aux.indexOf('query')!==-1){
+            aux1 = aux.replace('query', 'insert')
+            $('#'+aux1).prop('checked', false)
+            aux1 = aux.replace('query', 'update')
+            $('#'+aux1).prop('checked', false)
+            aux1 = aux.replace('query', 'delete')
+            $('#'+aux1).prop('checked', false)
+        }
+
+        $(this).next().next().find('.module').prop('checked', $(this).prop('checked'))
+        analizar($(this).parent().closest('.tree-menu').prev().prev())
+    })
+
+    function get_cb_ids(selection) {
+        checkboxs_ids = []
+        $(selection+':checked').each(function () {
+            checkboxs_ids.push(parseInt($(this).attr('data-id')))
+        })
+        return checkboxs_ids
+    }
+
+    {% if 'rol_insert' in privileges %}
+    $('#new').click(function () {
+        $('#id').val('')
+        $('#nombre').val('')
+        $('#descripcion').val('')
+        $('.module').prop('checked', false)
+
+        {#clean_form()#}
+        verif_inputs()
+        $('#id_div').hide()
+        $('#insert').show()
+        $('#update').hide()
+        //validationInputSelects("form")
+        $('#form').modal('show')
+    })
+
+    $('#insert').click(function () {
+        var permisos = document.querySelectorAll("input[type='checkbox']:checked")
+
+        if(!validationInputSelects("form")){
+            if(permisos.length !=0 ){
+                x = get_cb_ids('.module')
+
+                objeto = JSON.stringify({
+                    'nombre': $('#nombre').val(),
+                    'descripcion': $('#descripcion').val(),
+                    'modulos': get_cb_ids('.module'),
+                    'ip':ips
+                })
+                ajax_call("{{privileges['rol_insert'].route}}", {_xsrf: getCookie("_xsrf"), object: objeto}, null, function () {window.location = main_route})
+                $('#form').modal('hide')
+            }else{
+                swal(
+                    'Error de permisos.',
+                    'Seleccione al menos un permiso',
+                    'error'
+                )
+            }
+
+        }else {
+            swal(  'Error de datos.',
+                      'Hay campos vacios por favor verifique sus datos.',
+                      'error'
+                    )
+        }
+    })
+    {% end %}
+    {% if 'rol_update' in privileges %}
+    function attach_edit() {
+        $('.edit').click(function () {
+            obj = JSON.stringify({
+                'id': parseInt(JSON.parse($(this).attr('data-json')))
+                })
+                ajax_call_get("{{privileges['rol_update'].route}}",{
+                    _xsrf: getCookie("_xsrf"),
+                    object: obj
+                },function(response){
+                    console.log(response);
+                    var self = response;
+                    $('#id').val(self.id)
+                    $('#nombre').val(self.nombre)
+                    $('#descripcion').val(self.descripcion)
+
+                    $('.module').prop('checked', false)
+                    for (i in self.modulos){
+                        $('.module[data-id="'+self.modulos[i].id+'"]').prop('checked', true)
+                    }
+
+                    clean_form()
+                    verif_inputs()
+                    $('#id_div').hide()
+                    $('#insert').hide()
+                    $('#update').show()
+                    $('#form').modal('show')
+                })
+        })
+
+    }
+
+    $('#update').click(function () {
+        /*if(!validate_fields(['nombre', 'descripcion'])){
+            return
+        }*/
+        objeto = JSON.stringify({
+            'id': parseInt($('#id').val()),
+            'nombre': $('#nombre').val(),
+            'descripcion': $('#descripcion').val(),
+            'modulos': get_cb_ids('.module'),
+            'ip':ips
+        })
+        console.log(objeto)
+        ajax_call("{{privileges['rol_update'].route}}", {_xsrf: getCookie("_xsrf"), object: objeto}, null, function () {window.location = main_route})
+        $('#form').modal('hide')
+    })
+    {% end %}
+
+    reload_form()
+        {% if 'rol_update' in privileges %}
+        attach_edit()
+        {% end %}
+    {% if 'rol_update' in privileges %}
+        $('.enabled').click(function (e) {
+            e.preventDefault()
+            cb_delete = this
+            b = $(this).prop('checked')
+            if(!b){
+                cb_title = "¿Está seguro de que desea dar de baja el rol?"
+                cb_text = "Los usuarios relacionados, también serán dados de baja."
+                cb_type = "warning"
+            } else {
+                cb_title ="¿Está seguro de que desea dar de alta el rol?"
+                cb_text = ""
+                cb_type = "info"
+            }
+            swal({
+                title: cb_title,
+                text: cb_text,
+                type: cb_type,
+                showCancelButton: true,
+                confirmButtonColor: "#004c99",
+                cancelButtonColor: "#F44336",
+                confirmButtonText: "Aceptar",
+                cancelButtonText: "Cancelar"
+            }).then(function () {
+                $(cb_delete).prop('checked', !$(cb_delete).is(':checked'))
+                if(b) $(cb_delete).parent().prop('title', 'Activo')
+                else $(cb_delete).parent().prop('title', 'Inhabilitado')
+
+                objeto =JSON.stringify({
+                   id: parseInt($(cb_delete).attr('data-id')),
+                   enabled: $(cb_delete).is(':checked'),
+                    'ip':ips
+                })
+                console.log(objeto)
+                ajax_call('rol_delete', {object: objeto,_xsrf: getCookie("_xsrf")}, null, function () {setTimeout(function(){}, 2000);})
+                $('#form').modal('hide')
+            })
+        })
+        {% end %}
+</script>
+
+{%end%}

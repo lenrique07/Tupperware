@@ -1,0 +1,268 @@
+{% extends ../../../common/views/layout.html %}
+{% block style %}
+{% set user = usuario %}
+<style>
+    .accion {
+        cursor: pointer
+    }
+</style>
+<script src="resources/js/functions.js"></script>
+
+<script>
+    main_route = '/pedido'
+
+    function default_values() {
+        page_nr = 1
+        max_entries = 10
+        like_search = ""
+        order_by = ""
+        ascendant = true
+    }
+
+    default_values()
+</script>
+{% end %}
+{% block content %}
+
+
+{% if 'pedido_insert' in privileges or 'pedido_update' in privileges %}
+{% include form.html %}
+{% end %}
+
+<div class="header tupperware"><h2 class="titulo"> Lista de Pedidos</h2></div>
+<div class="body">
+    <div class="row clearfix">
+        <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+            {% if 'pedido_insert' in privileges %}
+            <button id="new" type="button" class="btn bg-indigo waves-effect">
+                <i class="material-icons">add</i>
+            </button>
+            {% end %}
+        </div>
+    </div>
+    {% if 'pedido_query' in privileges %}
+    <div class="row">
+        <div class="body table-responsive">
+            <table id="data_table" class="table table-bordered table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="order_by_th" data-name="names">N°</th>
+                    <th class="order_by_th" data-name="names">Retail</th>
+                    <th class="order_by_th" data-name="names">Fecha</th>
+                    <th class="order_by_th" data-name="names">Usuario</th>
+                    <th class="actions_header">Acciones</th>
+                </tr>
+                </thead>
+                <tbody id="table_content">
+                {% include 'table.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+    {% end %}
+</div>
+{% end %}
+{% block script %}
+<script src="resources/plugins/momentjs/moment.js"></script>
+<script src="resources/plugins/momentjs/locale/es.js"></script>
+<script src="resources/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+<script src="resources/js/jquery.toast.js"></script>
+
+<script>
+
+$("#t_start").inputmask("h:s",{ "placeholder": "__/__" });
+$("#t_end").inputmask("h:s",{ "placeholder": "__/__" });
+$("#t_start2").inputmask("h:s",{ "placeholder": "__/__" });
+$("#t_end2").inputmask("h:s",{ "placeholder": "__/__" });
+    attach_validators()
+    reload_form()
+
+$('.show-tick').selectpicker()
+    $('.date').bootstrapMaterialDatePicker({
+        format: 'D/MM/YYYY',
+        clearButton: false,
+        weekStart: 1,
+        locale:'es',
+        time: false
+    }).on('change', function(e, date) {
+        $(this).parent().addClass('focused');
+        $('#d_end').bootstrapMaterialDatePicker('setMinDate', date);
+    });
+    $('.time').bootstrapMaterialDatePicker({
+        format: 'HH:mm',
+        clearButton: false,
+        weekStart: 1,
+        locale:'es',
+        date:false,
+    }).on('change', function(e, date) {
+        $(this).parent().addClass('focused');
+    });
+</script>
+
+<script>
+
+    $(document).ready(function () {
+
+    });
+    $(document).ajaxStart(function () {
+        {#$.Toast.showToast({title: "Espere mientras se ejecuta la operación.", icon:"loading"});#}
+    });
+    $(document).ajaxStop(function () {
+        $.Toast.hideToast();
+    });
+
+        $('#data_table').DataTable({
+        language : {
+           "url": "/resources/js/spanish.json"
+       }
+    });
+
+    {#attach_validators()#}
+    {% if 'pedido_insert' in privileges %}
+        $('#new').click(function () {
+            $('#retail').val(''),
+            $('#fecha').val(''),
+            $('#fkusuario').val(''),
+
+            {#clean_form()#}
+            verif_inputs()
+            $('#id_div').hide()
+            $('#insert').show()
+            $('#update').hide()
+            //validationInputSelects("form")
+            $('#form').modal('show')
+        });
+        $('#insert').click(function () {
+            if(!validationInputSelects("form")) {
+                objeto = JSON.stringify({
+                    'retail': $('#retail').val(),
+                    'fecha': $('#fecha').val(),
+                    'fkusuario': $('#fkusuario').val(),
+                })
+                ajax_call("{{privileges['pedido_insert'].route}}", {
+                    object: objeto,
+                    _xsrf: getCookie("_xsrf")
+                }, null, function () {
+                    setTimeout(function () {
+                        window.location = main_route
+                    }, 2000);
+                })
+                $('#form').modal('hide')
+            }else {
+                swal(
+                    'Error de datos.',
+                    'Hay campos vacios por favor verifique sus datos.',
+                    'error'
+                )
+            }
+
+        });
+    {% end %}
+
+        function convertirFecha(fecha){
+        var valores = fecha.split("-")
+        var nuevaFecha = valores[2] + "/" +  valores[1] + "/" + valores[0]
+        return nuevaFecha
+    }
+
+     function convertirFechadate(fecha){
+        var valores = fecha.split("/")
+        var nuevaFecha = valores[2] + "-" +  valores[1] + "-" + valores[0]
+        return nuevaFecha
+    }
+
+
+    {% if 'pedido_update' in privileges %}
+
+    function attach_edit() {
+        $('.edit').click(function () {
+            obj = JSON.stringify({
+                'id': parseInt(JSON.parse($(this).attr('data-json')))
+            })
+            ajax_call_get("{{privileges['pedido_update'].route}}", {
+                _xsrf: getCookie("_xsrf"),
+                object: obj
+            }, function (response) {
+                var self = response;
+                $('#id').val(self.id);
+                $('#retail').val(self.retail);
+                $('#fecha').val(convertirFecha(self.fecha));
+                $('#fkusuario').val(self.fkusuario);
+
+
+                clean_form()
+                verif_inputs()
+                $('#id_div').hide()
+                $('#insert').hide()
+                $('#update').show()
+                $('#form').modal('show')
+            })
+        })
+    }
+
+    $('#update').click(function () {
+        if (!validationInputSelects("form")) {
+            objeto = JSON.stringify({
+                'id': parseInt($('#id').val()),
+                'retail': $('#retail').val(),
+                'fecha': convertirFechadate($('#fecha').val()),
+                'fkusuario': $('#fkusuario').val(),
+
+            })
+            ajax_call("{{privileges['pedido_update'].route}}", {
+                object: objeto,
+                _xsrf: getCookie("_xsrf")
+            }, null, function () {
+                setTimeout(function () {
+                    window.location = main_route
+                }, 2000);
+            })
+            $('#form').modal('hide')
+        } else {
+            swal('Error de datos.',
+                'Hay campos vacíos por favor verifique sus datos.',
+                'error')
+        }
+
+    });
+    {% end %}
+    reload_form()
+</script>
+<script>
+
+    {% if 'pedido_update' in privileges %}
+    attach_edit()
+    {% end %}
+
+    {% if 'pedido_delete' in privileges %}
+    $('.delete').click(function () {
+        id = parseInt(JSON.parse($(this).attr('data-json')))
+        enabled = false
+        swal({
+            title: "¿Desea dar de baja el pedido?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#673AB7",
+            cancelButtonColor: "#F44336",
+            confirmButtonText: "Aceptar",
+            cancelButtonText: "Cancelar"
+        }).then(function () {
+            ajax_call("{{privileges['pedido_delete'].route}}", {
+                id,
+                enabled,
+                _xsrf: getCookie("_xsrf")
+            }, null, function () {
+                setTimeout(function () {
+                    window.location = main_route
+                }, 2000);
+            })
+        })
+    })
+    {% end %}
+
+
+</script>
+
+{% end %}

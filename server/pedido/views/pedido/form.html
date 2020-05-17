@@ -1,0 +1,75 @@
+<div id="form" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h3 id="cliente_tittle" class="modal-title">Ingreso de Pedido</h3>
+                <h4 id="cliente_enable" class=""></h4>
+            </div>
+            <div class="modal-body">
+                <div id="cliente_form_body" class="box-body">
+                    <div id="id_div" class="form-group">
+                        <div class="form-line">
+                            {% module xsrf_form_html() %}
+                            <input id="id" type="text" class="form-control" disabled="disabled">
+                            <label class="form-label">producto ID</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="retail" type="text" class="form-control int32" required>
+                            <label class="form-label">Retail</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-line">
+                            <label class="form-label">Fecha</label>
+                            <input id="fecha" name="fecha" type="text"  class="form-control date">
+                        </div>
+                   </div>
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="fkusuario" type="text" class="form-control username" required>
+                            <label class="form-label">Usuario</label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    {% if 'pedido_insert' in privileges %}
+                    <button id="insert" type="button" class="btn bg-indigo waves-effect">Guardar<i
+                            class="material-icons">save</i></button>
+                    {% end %}
+                    {% if 'pedido_update' in privileges %}
+                    <button id="update" type="button" class="btn bg-indigo waves-effect">Guardar<i
+                            class="material-icons">save</i></button>
+                    {% end %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    //$(document).ready(function () {
+      //  f = localStorage.getItem("fecha")
+        //$('#i_date').val(i),
+        //$('#f_date').val(f)
+        //localStorage.removeItem('algo'); para eliminar la variable por si acaso
+    //});
+    // $('.datepicker').bootstrapMaterialDatePicker({
+    //     format: 'DD/MM/YYYY',
+    //     clearButton: false,
+    //     weekStart: 1,
+    //     locale: 'es',
+    //     maxDate: new Date(),
+    //     time: false
+    // }).on('change', function (e, date) {
+    //     $(this).parent().addClass('focused');
+    //     $('#f_date').bootstrapMaterialDatePicker('setMinDate', date);
+    // });
+
+</script>

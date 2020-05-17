@@ -1,0 +1,33 @@
+
+{% for c in objects %}
+<tr>
+    <td>{{ c.gestion }}</td>
+    {% for cat in catalogo %}
+        {% if cat.id==c.catalogo %}
+            <td>{{ cat.Numerocatalogo }}</td>
+        {% end %}
+    {% end %}
+    <td>{{ c.nombre}}</td>
+    <td>{{ c.codigo}}</td>
+    <td>{{ c.codvta}}</td>
+        {% if c.foto==" " %}
+        <td><img src="https://www.dropbox.com/s/v03qin9j72jks1l/sinImagen.jpg?raw=1" alt="" style="width: 100px; height: 60px;"/></td>
+    {% else%}
+        <td><img src="{{ c.foto }}" alt="" style="width: 100px; height: 60px;"/></td>
+    {% end%}
+    <td>{{ c.precio}}</td>
+    <td>{{ c.prepro}}</td>
+
+    <td align="center">
+        {% if 'oferta_update' in privileges %}
+        <button id="edit" data-json="{{c.id}}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>
+        {% end %}
+        {% if 'oferta_delete' in privileges %}
+        <button id="delete" data-json="{{c.id}}" type="button" class="btn bg-red waves-effect waves-light delete" title="Eliminar"><i class="material-icons">clear</i></button>
+        {% end %}
+    </td>
+</tr>
+{% end %}
+
+
+

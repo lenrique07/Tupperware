@@ -1,0 +1,762 @@
+{% extends ../../../common/views/layout.html %}
+{% block style %}
+{% set user = usuario %}
+<style>
+    .accion {
+        cursor: pointer
+    }
+</style>
+<script src="resources/js/functions.js"></script>
+
+<script>
+    main_route = '/pagina'
+
+    function default_values() {
+        page_nr = 1
+        max_entries = 10
+        like_search = ""
+        order_by = ""
+        ascendant = true
+    }
+
+    default_values()
+</script>
+{% end %}
+{% block content %}
+
+
+{% if 'pagina_insert' in privileges or 'pagina_update' in privileges %}
+{% include form.html %}
+{% end %}
+
+
+
+<div class="header bg-indigo"><h2>Página</h2></div>
+<div class="body">
+    <div class="row clearfix">
+        <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+            {% if 'pagina_insert' in privileges %}
+            <button id="new" type="button" class="btn bg-indigo waves-effect">
+                <i class="material-icons">add</i>
+            </button>
+            {% end %}
+        </div>
+    </div>
+    {% if 'pagina_query' in privileges %}
+    <div class="row">
+        <div class="body table-responsive">
+            <table id="data_table" class="table table-bordered table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="order_by_th" data-name="names">Gestión</th>
+                    <th class="order_by_th" data-name="names">Nro. Catálogo</th>
+                    <th class="order_by_th" data-name="names">Nro. de Página</th>
+                    <th class="order_by_th" data-name="names">Portada</th>
+                    <th class="actions_header">Acciones</th>
+                </tr>
+                </thead>
+                <tbody id="table_content">
+                {% include 'table.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+    {% end %}
+</div>
+{% end %}
+{% block script %}
+<script src="resources/plugins/momentjs/moment.js"></script>
+<script src="resources/plugins/momentjs/locale/es.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!-- <script src="https://cdn.datatables.net/rowreorder/1.2.6/js/dataTables.rowReorder.min.js"> </script> -->
+<!-- <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script> -->
+<script src="resources/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+<script src="resources/js/jquery.toast.js"></script>
+<script>
+     //remove_empty_columns()
+     var ips = ""
+      $(document).ajaxStart(function () {
+        $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
+            ips = data
+        })
+    });
+
+        attach_validators()
+         $(document).ready(function () {
+        $(".file").each(function () {
+            $(this).fileinput('refresh',{
+                allowedFileExtensions: ['jpg', 'gif', 'jpeg','png', 'ico', 'webp'],
+                maxFileSize: 20000,
+                maxFilesNum: 1,
+                showUpload: false,
+                layoutTemplates: {
+                                    main1: '{preview}\n' +
+                                        '<div class="kv-upload-progress hide"></div>\n' +
+                                        '<div class="input-group {class}">\n' +
+                                        '   {caption}\n' +
+                                        '   <div class="input-group-btn">\n' +
+                                        '       {remove}\n' +
+                                        '       {cancel}\n' +
+                                        '       {browse}\n' +
+                                        '   </div>\n' +
+                                        '</div>',
+                                    main2: '{preview}\n<div class="kv-upload-progress hide"></div>\n{remove}\n{cancel}\n{browse}\n',
+                                    preview: '<div class="file-preview {class}">\n' +
+                                        '    {close}\n' +
+                                        '    <div class="{dropClass}">\n' +
+                                        '    <div class="file-preview-thumbnails">\n' +
+                                        '    </div>\n' +
+                                        '    <div class="clearfix"></div>' +
+                                        '    <div class="file-preview-status text-center text-success"></div>\n' +
+                                        '    <div class="kv-fileinput-error"></div>\n' +
+                                        '    </div>\n' +
+                                        '</div>',
+                                    icon: '<span class="glyphicon glyphicon-file kv-caption-icon"></span>',
+                                    caption: '<div tabindex="-1" class="form-control file-caption {class}">\n' +
+                                        '   <div class="file-caption-name"></div>\n' +
+                                        '</div>',
+                                    btnDefault: '<button type="{type}" tabindex="500" title="{title}" class="{css}"{status}>{icon}{label}</button>',
+                                    btnLink: '<a href="{href}" tabindex="500" title="{title}" class="{css}"{status}>{icon}{label}</a>',
+                                    btnBrowse: '<div tabindex="500" class="{css}"{status}>{icon}{label}</div>',
+                                    progress: '<div class="progress">\n' +
+                                        '    <div class="progress-bar progress-bar-success progress-bar-striped text-center" role="progressbar" aria-valuenow="{percent}" aria-valuemin="0" aria-valuemax="100" style="width:{percent}%;">\n' +
+                                        '        {percent}%\n' +
+                                        '     </div>\n' +
+                                        '</div>',
+                                    footer: '<div class="file-thumbnail-footer">\n' +
+                                        '    <div class="file-caption-name" style="width:{width}">{caption}</div>\n' +
+                                        '    {progress} {actions}\n' +
+                                        '</div>',
+                                    actions: '<div class="file-actions">\n' +
+                                        '    <div class="file-footer-buttons">\n' +
+                                        '        {delete} {other}' +
+                                        '    </div>\n' +
+                                        '    {drag}\n' +
+                                        '    <div class="file-upload-indicator" title="{indicatorTitle}">{indicator}</div>\n' +
+                                        '    <div class="clearfix"></div>\n' +
+                                        '</div>',
+                                    actionDelete: '<button type="button" class="kv-file-remove {removeClass}" title="{removeTitle}"{dataUrl}{dataKey}>{removeIcon}</button>\n',
+                                    actionDrag: '<span class="file-drag-handle {dragClass}" title="{dragTitle}">{dragIcon}</span>'
+                                }
+            })
+        });
+    });
+
+    $(document).ready(function () {
+    		// $("#new").append("<br>texto añadido al final del párrafo.");
+        // $("#new").append("<br>texto añadido al final del párrafo.");
+        //$("div.row>div.col-sm-6>div#data_table_length.dataTables_length").removeClass("rojo grande26");
+        //$("div.row>div.col-sm-6").removeClass("col-sm-6");
+        // $("div.row>div.col-sm-6").addClass("col-sm-4");
+        $("div.body.table-responsive > div#data_table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer > div.row > div").removeClass("col-sm-6");
+        $("div.body.table-responsive > div#data_table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer > div.row > div").addClass("col-sm-4");
+
+
+        //col-sm-6
+        //$(".body > .row clearfix > .col-xs-3 col-sm-2 col-md-2 col-lg-2 > .btn bg-indigo waves-effect").append("<br>texto añadido al final del párrafo.");
+        // $("#data_table_length").append("<br>texto añadido al final del párrafo.");
+
+    });
+    $(document).ajaxStart(function () {
+        {#$.Toast.showToast({title: "Espere mientras se ejecuta la operación.", icon:"loading"});#}
+    });
+
+    $(document).ajaxStop(function () {
+        $.Toast.hideToast();
+    });
+
+      $('#data_table').DataTable({
+          language : {
+              "url": "/resources/js/spanish.json"
+          }
+      });
+
+     //////////////////////////////////////////////////editar///////////////////////////////////////////////////////////////////////
+    function append_input_producto(tabla_producto) {
+
+      $('#productos_div').append(
+        '<div class="row">\
+                <div class="body table-responsive">\
+                    <table id="data_table2" onmouseover="drag(this)" class="table table-bordered table-striped table-hover">\
+                        <thead>\
+                        <tr>\
+                            <th class="order_by_th" data-name="names">Cod Venta</th>\
+                            <th class="order_by_th" data-name="names">Nombre</th>\
+                            <th class="order_by_th" data-name="names">Foto</th>\
+                            <th class="order_by_th" data-name="names">Orden</th>\
+                        </tr>\
+                        </thead>\
+                        <tbody id="table_content2">'+ tabla_producto +'</tbody>\
+                    </table>\
+                </div>\
+            </div>\
+        </div>'
+      )
+
+    }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    {# attach_validators()#}
+
+    {% if 'pagina_insert' in privileges %}
+    $('#new').click(function () {
+        $('#numero').val(''),
+        $('#portada').val(''),
+        $('#fkcatalogo').val(''),
+        $('#productos_div').empty()
+
+        {#clean_form()#}
+        verif_inputs()
+        $('#id_div').hide()
+        $('#imagen_insert').show()
+        $('#imagen_update').hide()
+        $('#form').modal('show')
+    });
+    $('#imagen_insert').on('click', function (e) {
+            e.preventDefault();
+            var data = new FormData($('#submit_imagen')[0]);
+        if(!validationInputSelects("form")) {
+            objeto = JSON.stringify({
+                 'numero': $('#numero').val(),
+                'fkcatalogo': $('#fkcatalogo').val(),
+                'ip':  ips,
+            });
+            ruta = "{{privileges['pagina_insert'].route}}";
+            data.append('object', objeto)
+            data.append('_xsrf',getCookie("_xsrf"))
+            render = null
+            callback = function () {
+                setTimeout
+                (function () {
+                    window.location = main_route
+                }, 2000);
+            }
+            $.ajax({
+                    url: ruta,
+                    type: "post",
+                    data: data,
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                      async: true,
+            beforeSend: function () {
+               $("#rproc-loader").fadeIn(800);
+               $("#new").hide();
+            },
+            success: function () {
+               $("#rproc-loader").fadeOut(800);
+               $("#new").show();
+            }
+                }).done(function (response) {
+                response=JSON.parse(response);
+                if ("message" in response && response.message != '') {
+                    if (response.success) {
+                        showMessage(response.message, "success", "ok")
+                    } else {
+                        showMessage(response.message, "danger", "remove")
+                    }
+                }
+                if (callback != null) {
+                    callback(response)
+                }
+            })
+                $('#form').modal('hide')
+         }else {
+            swal(
+                    'Error de datos.',
+                    'Hay campos vacios por favor verifique sus datos.',
+                    'error'
+            )
+        }
+        });
+    {% end %}
+
+
+
+    {% if 'pagina_update' in privileges %}
+    function attach_edit() {
+        $('.edit').click(function () {
+            console.log("update")
+            obj = JSON.stringify({
+                'id': parseInt(JSON.parse($(this).attr('data-json')))
+            });
+
+            ajax_call_get("{{privileges['pagina_update'].route}}", {
+                _xsrf: getCookie("_xsrf"),
+                object: obj
+            }, function (response) {
+                var self = response;
+                
+                var cont = 1;
+                $('#id').val(self['id']),
+                $('#numero').val(self['numero']);
+                $('#fkcatalogo').val(self['catalogo'].Numerocatalogo);
+                document.getElementById("imagen_show_img").src = self['portada'];
+
+                $('#productos_div').empty()
+
+                var tabla_producto = "";
+                let arrayDeProductos =self['producto'] ;
+                arrayDeProductos.sort((unProducto, otroProducto) => unProducto.orden - otroProducto.orden);
+                for(i in self['producto']){
+
+                     id = self['producto'][i].id;
+                    codvta = self['producto'][i].codvta;
+                    nombre = self['producto'][i].nombre;
+                    orden = self['producto'][i].orden;
+                    var botonEditarProd="";
+                        botonEditarProd = "<button id='"+id+"' onclick='attach_producto(this)' data-json='"+id +"' type='button' class='btn bg-indigo waves-effect waves-light refresh' title='Actualizar'><i class='material-icons'>refresh</i></button>";
+                    foto = self['producto'][i].foto;
+                    if (foto ==" "){
+                      foto = "resources/images/sinImagen.jpg"
+                    }
+                    tabla_producto = tabla_producto + '<tr>' +
+                        '<td>' + codvta + '</td>' +
+                        '<td>'+ nombre + '</td>' +
+                        '<td><img src="' + foto + '" alt="" style="width: 100px; height: 60px;"/></td>' +
+                        '<td><span class="orden" id="'+id+'">'+orden+'<span></td>' +
+                        '</tr>';
+                }
+                append_input_producto(tabla_producto);
+                clean_form()
+                verif_inputs()
+                $('#id_div').hide()
+                $('#imagen_insert').hide()
+                $('#imagen_update').show()
+                $('#form').modal('show')
+            })
+        })
+    }
+
+    $('#imagen_update').on('click', function (e) {
+            let orden = recorrido();
+            e.preventDefault();
+            var data = new FormData($('#submit_imagen')[0]);
+//            if (!AllGood()){ return }
+            objeto = JSON.stringify({
+                 'id': parseInt($('#id').val()),
+                'numero': $('#numero').val(),
+                'fkcatalogo': $('#fkcatalogo').val(),
+                'producto': orden,
+                'ip':  ips,
+            });
+            ruta = "{{privileges['pagina_update'].route}}";
+            data.append('object', objeto)
+            data.append('_xsrf',getCookie("_xsrf"))
+            render = null
+            callback = function () {
+                setTimeout
+                (function () {
+                    window.location = main_route
+                }, 2000);
+            }
+            $.ajax({
+                url: ruta,
+                type: "post",
+                data: data,
+                contentType: false,
+                processData: false,
+                cache: false,
+                async: false
+            }).done(function (response) {
+                response=JSON.parse(response);
+                if ("message" in response && response.message != '') {
+                    if (response.success) {
+                        showMessage(response.message, "success", "ok")
+                    } else {
+                        showMessage(response.message, "danger", "remove")
+                    }
+                }
+                if (callback != null) {
+                    callback(response)
+                }
+            })
+            $('#form').modal('hide')
+            $('#form_paginas_productos').modal('hide')
+        });
+    {% end %}
+    reload_form()
+</script>
+
+<script>
+
+    {% if 'pagina_update' in privileges %}
+    attach_edit()
+    {% end %}
+
+
+    {% if 'pagina_delete' in privileges %}
+     function attach_delete() {
+         $('.delete').click(function () {
+              console.log("delete")
+             id = parseInt(JSON.parse($(this).attr('data-json')));
+             objeto =JSON.stringify({
+                   'id': id,
+                   'enabled': false,
+                    'ip':  ips,
+             });
+             swal({
+                 title: "¿Desea dar de baja la página?",
+                 type: "warning",
+                 showCancelButton: true,
+                 confirmButtonColor: "#673AB7",
+                 cancelButtonColor: "#F44336",
+                 confirmButtonText: "Aceptar",
+                 cancelButtonText: "Cancelar"
+             }).then(function () {
+                 ajax_call("{{privileges['pagina_delete'].route}}", {
+                     object: objeto,
+                     _xsrf: getCookie("_xsrf")
+                 }, null, function () {
+                     setTimeout(function () {
+                         window.location = main_route
+                     }, 2000);
+                 })
+             })
+         })
+     }
+    {% end %}
+
+    {% if 'pagina_delete' in privileges %}
+    attach_delete()
+    {% end %}
+
+</script>
+
+<script>
+function append_input_row(id_in) {
+    var partaux = "";
+    $('#box_dinamico').append(
+    // '<div class="row">\
+    //     <div id="peri_' + id_in + '" class="col-xs-4 col-sm-6 col-md-9">\
+    //       <div class="form-group form-float">\
+    //           <div class="form-line">\
+    //           <tbody id="table_content">\
+    //            <tr><td>i </td><td>i</td><td><img src="i " alt="" style="width: 100px; height: 60px;"/></td></tr>\';\
+    //           </tbody>\
+    //           </div>\
+    //       </div>\
+    //     </div>\
+    //     <div class="col-md-1" hidden>\
+    //         <input  id="id'+id_in+'" value="'+id_in+'" class="form-control ciclodetalle valorProducto" hidden>\
+    //     </div>\
+    //     <div class="col-md-1">\
+    //         <button type="button" class="btn bg-red waves-effect clear_schedule">\
+    //             <i class="material-icons">clear</i>\
+    //         </button>\
+    //     </div>\
+    // </div>'
+    )
+          //Cambia de estilo al SELECT
+         $('#per_'+id_in).selectpicker({
+         size: 7,
+         liveSearch: true,
+         liveSearchPlaceholder: 'Buscar productos.',
+         title: 'Seleccione un producto.'
+     });
+        $('.clear_schedule').last().click(function () {
+            $(this).parent().parent().remove()
+        })
+    }
+
+    let contador = 0;
+    $('#nueva_fila').click(function () {
+        contador++;
+        append_input_row(contador);
+    });
+
+    function obtener_producto() {
+        hours = []
+        hours_inputs = $('.ciclodetalle')
+        for(i=0;i<hours_inputs.length;i+=1){
+            h0 = hours_inputs[i].value
+
+            //console.log(h0, h1, h2, h3, h4, h5)
+            //if (!(h0 < h1 && h1 < h2 && h2 < h3 && h3 < h4 && h4 < h5)){
+
+            //console.log('33')
+
+            hours.push((function add_hours(h0) {
+                //console.log(h0, h1, h2, h3, h4, h5)
+                return {
+                    'fkproducto': h0
+                }
+            })(
+                    hours_inputs[i].value))
+        }
+
+        return hours
+    }
+
+
+    function obtener_valor_select(id){
+        /*
+        //Obtiene el VALUE de un SELECT
+        let valor_select = document.getElementById("per_1").value; //obtener VALOR de SELECT
+        console.log(valor_select);
+        let input_id = document.getElementById("input_1"); //obtener el INPUT
+        input_id.setAttribute("value", valor_select);
+        */
+
+        //Obtiene el texto de un SELECT
+        let select_obtenido = document.getElementById("per_" + id); //OBTENER el SELECT
+        let select_valor = document.getElementById("per_" + id).value; //obtener VALOR de SELECT
+        let i = select_obtenido.selectedIndex;
+        let input_nombre = document.getElementById("input_"+ id); //obtener el INPUT
+        let input_valor = document.getElementById("id"+ id); //obtener el INPUT
+        input_valor.setAttribute("value", select_valor); //SET VALOR A INPUT OBTENIDO
+    }
+
+
+    function array_productos(){
+        //let numero_items = $('.auxiliar').length; //Conteo de elementos que tiene clase auxiliar
+        //console.log(numero_items);
+        let arrayProductos = [];
+        $(".valorProducto").each(function() {
+            arrayProductos.push(this.value);
+            //mapa[$(this).attr("name")] = $(this).val();
+        });
+        return arrayProductos;
+        /*
+        $("#listas li").each(function(){
+        	    alert($(this).text())
+        });
+         */
+
+    }
+
+
+    //NUEVO SELECT
+    $(document).ready(function(){
+          //Crear array que contengan los catalogos
+          let listaGestion = [];
+          let listaIdGestion = [];
+          {% for cat in catalogos %}
+              if (!listaGestion.includes(" {{ cat.Gestion }} ")){ //verifica si el elemento incluye en el array
+                listaGestion.push(" {{ cat.Gestion }} ");
+                listaIdGestion.push(" {{ cat.id }} ");
+              }
+          {% end %}
+
+          let gestionSelect = "";
+          //iterando sobre el array
+          for(let i=0; i<listaGestion.length; i++){
+              gestionSelect = "<option value="+listaGestion[i]+">"+listaGestion[i]+"</option>\n"+gestionSelect; //guardo los OPTIONS del SELECT
+          }
+          //console.log(gestionSelect);
+
+          //string que tiene el elemento GESTION SELECT
+          let gestionAppend = "Gestión <select id=\"SelectGestion\" aria-controls=\"data_table\" class=\"form-control input-sm\">\n" +
+                   "  <option value=\"0\">Seleccione una gestión</option>\n" + gestionSelect + "</select>";
+
+          //string que tiene el elemento SELECT
+          let elementoAppend = "Catálogo <select id=\"SelectCatalogo\" aria-controls=\"data_table\" class=\"form-control input-sm\">\n" +
+                   "  <option value=\"0\">Seleccione una opción</option>\n"+"</select>";
+
+          let  control = setTimeout(function() {
+                //se agrega una clase despues del row para que muestre el select de los catalogos
+               $("div.body.table-responsive > div#data_table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer > div.row:first").prepend("<div class='col-sm-12'> </div>");
+                //se agrega el elemento GESTION select
+               $("div.body.table-responsive > div#data_table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer > div.row:first > div:first").append(gestionAppend);
+                //se agrega el elemento select
+               $("div.body.table-responsive > div#data_table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer > div.row:first > div:first").append(elementoAppend);
+               }, 1000  //La función se ejecuta con 2 seg de retraso
+          );
+
+        // SELECT DE GESTION
+        var variable1 = setTimeout(function() {
+        $('#SelectGestion').change(function(){
+            let idSelectedGestion = $(this).children("option:selected").val();
+            let selectedGestion = $(this).children("option:selected").text();
+            $("#SelectCatalogo").empty().append('<option selected="selected" value="0">Seleccione una opción</option>');
+            if(parseInt(idSelectedGestion) !== 0){
+                objeto = JSON.stringify({
+                      'gestion' : parseInt(selectedGestion),
+                      'catalogo' : parseInt(idSelectedGestion),
+                      '_xsrf':getCookie("_xsrf")
+                  });
+                ruta = "\\catalogo_filter";
+                $.ajax({
+                          url: ruta,
+                          method: "POST",
+                          data:{_xsrf: getCookie("_xsrf"), object: objeto},
+                          async: false,
+                }).done(function (response) {
+                response=JSON.parse(response);
+                if ("message" in response && response.message != '') {
+                    if (response.success) {
+                        showMessage(response.message, "success", "ok")
+                    } else {
+                        showMessage(response.message, "danger", "remove")
+                    }
+                }
+
+                let responseGestion = response.response;
+                let selectNumeroCatalogo = "";
+                for (let j=0; j<responseGestion.length; j++){
+                    selectNumeroCatalogo = "<option value="+responseGestion[j].id+">"+responseGestion[j].Numerocatalogo+"</option>\n"+selectNumeroCatalogo;
+                }
+                $("#SelectCatalogo").append(selectNumeroCatalogo);
+               }); //END DONE AJAX CALL
+            }else{
+                location.reload();
+            }
+
+              }); //fin change SELECT GESTION JQUERY
+              }, 1500  //La función se ejecuta con 1,5 seg de retraso
+              ); //FIN SETTIMEOUT GESTION
+
+
+            //SELECT NRO CATALOGO
+           var variable2 = setTimeout(function() {
+              $("#SelectCatalogo").change(function () {
+                  let gestion = $("#SelectGestion").children("option:selected").text();
+                  let valuegestion = $("#SelectGestion").children("option:selected").val();
+                  let catalogo = $(this).children("option:selected").val();
+                  let numeroCatalogo = $(this).children("option:selected").text();
+                  if (valuegestion!==0){
+                      var table2 = $('#data_table').DataTable();
+                      table2.clear().draw();
+                      objeto = JSON.stringify({
+                          'id_catalogo' : parseInt(catalogo),
+                          '_xsrf':getCookie("_xsrf")
+                      });
+                      ruta = "\pagina_cat_filter";
+                      $.ajax({
+                              url: ruta,
+                              method: "POST",
+                              data:{_xsrf: getCookie("_xsrf"), object: objeto},
+                              async: true,
+                    }).done(function (response) {
+                    response=JSON.parse(response);
+                    let arrayPaginas = response.response;
+                    let catpagina = arrayPaginas[arrayPaginas.length-1];
+                    for (let j=1; j<=arrayPaginas.length-1; j++){
+                        var botones="";
+                        botones = botones+"<button id='edit' data-json='"+arrayPaginas[j-1].id +"' type='button' class='btn bg-indigo waves-effect waves-light edit' title='Editar'><i class='material-icons'>create</i></button>";
+                        botones = botones+"<button id='delete' data-json='"+arrayPaginas[j-1].id+"' type='button' class='btn bg-red waves-effect waves-light delete' title='Eliminar'><i class='material-icons'>clear</i></button>";
+                        if (arrayPaginas[j-1].portada== " ") {
+                           var portada = "<img src=\'resources/images/sinImagen.jpg\' alt=\"\" style=\"width: 100px; height: 60px;\">";
+                        } else {
+                            var portada ="<img src=\'"+arrayPaginas[j-1].portada+"\' alt=\"\" style=\"width: 100px; height: 60px;\">";
+                        }
+                        var a = table2.row.add([catpagina.gestion,catpagina.numerocatalogo,arrayPaginas[j-1].numero,portada,botones]).draw( false );
+                    }
+                        attach_edit(),
+                        attach_delete()
+                    }) //fin ajax
+                  }else{
+                      reload_form();
+                  }
+
+              }); //fin change SELECT
+              }, 2200  //La función se ejecuta con 2 seg de retraso
+              ); //FIN SETTIMEOUT
+
+    });
+    	//FIN DEL NUEVO SELECT
+
+//ACTUALIZAR ORDEN        
+function attach_producto(elemento) {
+    //console.log(elemento);
+    let idProducto = elemento.id; //obtener el atributo ID del input
+    //let allInputs = $("[maxlength=3]"); //seleccionar todos los elementos con atributo maxlength=3
+    //console.log(allInputs);
+    var ordenInput = 0;
+    $( "[maxlength=3]" ).each(function() {  //iterar sobre todos los elementos con atributo maxlength=3
+            let idInput = ($(this).attr("id")); //Obtener el atributo ID del elemento actual iterado
+            if (idInput === idProducto){    //verificar si corresponde el ID del input con el ID del botón
+                //console.log($(this));
+                 ordenInput = $(this).val();
+                 //console.log(ordenInput);
+            }
+    });
+
+    //SELECT NRO CATALOGO
+    var variable3 = setTimeout(function() {
+
+              objeto = JSON.stringify({
+                  'id_producto' : parseInt(idProducto),
+                  'orden_producto' : parseInt(ordenInput),
+                  'ip':  ips,
+                  '_xsrf':getCookie("_xsrf")
+              });
+
+              ruta = "\orden_producto";
+              $.ajax({
+                      url: ruta,
+                      method: "POST",
+                      data:{_xsrf: getCookie("_xsrf"), object: objeto},
+                      async: false,
+            }).done(function (response) {
+            response=JSON.parse(response);
+            if ("message" in response && response.message != '') {
+                if (response.success) {
+                    showMessage(response.message, "success", "ok")
+                } else {
+                    showMessage(response.message, "danger", "remove")
+                }
+            }
+            swal(
+                    'Orden actualizado.',
+                    'El orden del producto ha sido actualizado correctamente.',
+                    'success'
+            )
+
+
+            }) //fin ajax
+      }, 2200  //La función se ejecuta con 2 seg de retraso
+    ); //FIN SETTIMEOUT
+
+
+}
+
+
+</script>
+
+<script>
+    //funcion que hace DRAG and DROP de rows de la tabla generada en el edit de cada pagina
+    function drag (data_table2){
+        $( "#table_content2" ).sortable();
+        $( "#table_content2" ).disableSelection();
+    }
+    
+    //funcion que devuelve un array de objetos, cada objeto tiene id y orden de un producto
+    function recorrido (){
+        var arrayOrden = new Array();
+        let contadorInput = 0;
+        $("tr.ui-sortable-handle").each(function() {
+            contadorInput++;
+            var elementoOrden = $(this).find("span");
+            //console.log("directo:  "+elementoOrden.attr("id"));            
+            //console.log("por texto:  "+$(elementoOrden).text());
+            var properties = new Object();
+            properties.id = elementoOrden.attr("id");
+            properties.orden = contadorInput;
+            //console.log(properties);
+            arrayOrden.push(properties);
+        });
+        return arrayOrden;
+    }    
+</script>
+
+
+<script>
+$(document).ready(function() {
+    $('#data_table tbody').on('click', '.edit', function () {
+        attach_edit();
+        attach_delete();
+    });
+    $('#data_table tbody').on('click', '.delete', function () {
+        attach_edit();
+        attach_delete();
+    });
+});
+</script>
+
+{% end %}

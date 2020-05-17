@@ -1,0 +1,31 @@
+
+{% for usuarios in objects %}
+<tr>
+    <td>{{ usuarios.nombre }}</td>
+    <td>{{ usuarios.apellido }}</td>
+    <td>{{ usuarios.correo }}</td>
+    <td>{{ usuarios.username }}</td>
+    {% if usuarios.foto==" " %}
+    <td><img src="resources/images/sinImagen.jpg" alt="" style="width: 100px; height: 60px;"/></td>
+    {% else%}
+    <td><img src="{{ usuarios.foto }}" alt="" style="width: 100px; height: 60px;"/></td>
+    {% end%}
+
+    <td>{{ usuarios.rol.nombre }}</td>
+    <td align="center">
+         {% if 'usuario_delete' in privileges %}
+            <div {%if usuarios.enabled%} title="Activo" {% else %} title="Inhabilitado" {% end %}>
+	             <input  id="{{usuarios.id}}" data-id="{{usuarios.id}}" type="checkbox" class="module chk-col-deep-purple delete" {%if usuarios.enabled%} {{"checked"}} {% end %} />
+                 <label for="{{usuarios.id}}"></label>
+            </div>
+        {% end %}
+    </td>
+    <td align="center">
+    {% if 'usuario_update' in privileges %}
+        <button id="edit" data-json="{{usuarios.id}}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons blanco">create</i></button>
+    {% end %}
+    </td>
+</tr>
+{% end %}
+
+

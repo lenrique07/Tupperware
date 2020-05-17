@@ -1,0 +1,110 @@
+<!-- Bootstrap Select Css -->
+<link href="resources/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
+<div id="form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="submit_imagen" class="new" enctype="multipart/form-data">
+            <form id="role-form" >
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 id="user_tittle" class="modal-title">Ingreso de Entidad Financiera</h3>
+                    <h4 id="user_enable" class=""></h4>
+                </div>
+                <div class="modal-body">
+                     <div id="cliente_form_body" class="box-body">
+                    <div id="id_div" class="form-group">
+                        <div class="form-line col s6">
+                            {% module xsrf_form_html() %}
+                            <input id="id" type="text" class="form-control" disabled="disabled">
+                            <label class="form-label">Financiera ID</label>
+                        </div>
+                    </div>
+
+
+                     <div class="form-group form-float">
+                        <div class="form-line  col s6">
+                            <input id="nombre" type="text" class="form-control int32" required>
+                            <label class="form-label">Nombre</label>
+                        </div>
+                    </div>
+
+                </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label class="form-label"> Portada: </label>
+                            <input id="imagen_archivo" name="archivo" type="file" class="file form-control" />
+                        </div>
+                    </div>
+
+            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                  {% if 'financiero_insert' in privileges %}
+                    <button id="imagen_insert" type="submit" class="btn btn-primary">Guardar</button>
+                   {% end %}
+                </div>
+            </form>
+         </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<!-- Bootstrap Select Css -->
+<link href="resources/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
+<div id="form2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="submit_imagen2" class="new" enctype="multipart/form-data">
+            <form id="role-form2" >
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 id="user_tittle2" class="modal-title">Editar Entidades Financiera</h3>
+                    <h4 id="user_enable2" class=""></h4>
+                </div>
+                <div class="modal-body">
+                     <div id="cliente_form_body2" class="box-body">
+                    <div id="id_div2" class="form-group">
+                        <div class="form-line col s6">
+                            {% module xsrf_form_html() %}
+                            <input id="id2" type="text" class="form-control" disabled="disabled">
+                            <label class="form-label">Financiera ID</label>
+                        </div>
+                    </div>
+
+                     <div class="form-group form-float">
+                        <div class="form-line  col s6">
+                            <input id="nombre2" type="text" class="form-control int32" required>
+                            <label class="form-label">Nombre</label>
+                        </div>
+                    </div>
+
+                </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <label class="form-label"> Portada: </label>
+                            <input id="imagen_archivo2" name="archivo" type="file" class="file form-control" />
+                        </div>
+                    </div>
+
+            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                  {% if 'financiero_update' in privileges %}
+                    <button id="imagen_update" type="submit" class="btn btn-primary">Modificar</button>
+                   {% end %}
+                </div>
+            </form>
+         </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+

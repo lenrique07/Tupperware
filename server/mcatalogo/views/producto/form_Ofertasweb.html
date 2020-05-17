@@ -1,0 +1,359 @@
+<!-- Bootstrap Select Css -->
+<link href="resources/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
+<div id="form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="submit_imagen" class="new" enctype="multipart/form-data">
+              <form id="role-form" >
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 id="user_tittle" class="modal-title">Ingreso de los Ofertas Web</h3>
+                    <h4 id="user_enable" class=""></h4>
+                </div>
+                <div class="modal-body">
+                    <div id="user_form_body" class="box-body">
+
+
+                        <div id="id_div" class="form-group">
+                            <div class="form-line">
+                                {% module xsrf_form_html() %}
+                                <input id="id" type="text" class="form-control" disabled="disabled">
+                                <label class="form-label">producto ID</label>
+                            </div>
+                          </div>
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <select id="gestion" name="gestion" class="form-control show-tick">
+                                <option value="0" class="form-control show-tick">-- Gestión --</option>
+                                {% for fkcatalogo in catalogounico%}
+                                <option value="{{fkcatalogo.Gestion}}" class="form-control show-tick">{{fkcatalogo.Gestion}}</option>
+                                {% end %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <select id="catalogo" name="catalogo" class="form-control show-tick">
+                                <option value="0" class="form-control show-tick">-- Catálogo --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                        <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="nombre" type="text" class="form-control textosigno" required>
+                              <label class="form-label">Nombre</label>
+                          </div>
+                        </div>
+                        <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="codigo" type="text" class="form-control int32" required>
+                              <label class="form-label">Código</label>
+                          </div>
+                      </div>
+                        <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="codvta" type="text" class="form-control textosigno" required>
+                              <label class="form-label">Código Venta</label>
+                          </div>
+                      </div>
+
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <input id="precio" type="text" class="form-control float" required>
+                                <label class="form-label">Precio</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <input id="prepro" type="text" class="form-control float" required>
+                                <label class="form-label">Precio Promotora</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <input id="retail" type="text" class="form-control int32" required>
+                                <label class="form-label">Retail</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <input id="bonificable" type="text" class="form-control int32" required>
+                                <label class="form-label">Bonificable</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <input id="impini" type="text" class="form-control float" required>
+                                <label class="form-label">Importe Inicial</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="impfin" type="text" class="form-control float" required>
+                              <label class="form-label">Importe Final</label>
+                          </div>
+                        </div>
+
+                        <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="gesini" type="text" class="form-control int32" required>
+                              <label class="form-label">Gestión Inicial</label>
+                          </div>
+                        </div>
+
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <input id="gesfin" type="text" class="form-control int32" required>
+                                <label class="form-label">Gestión Final</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="semini" type="text" class="form-control int32" required>
+                              <label class="form-label">Semana Inicial</label>
+                          </div>
+                        </div>
+
+                        <div class="form-group form-float">
+                          <div class="form-line">
+                              <input id="semfin" type="text" class="form-control int32" required>
+                              <label class="form-label">Semana Final</label>
+                          </div>
+                        </div>
+
+                        <div class="form-group form-float" hidden>
+                          <div class="form-line">
+                              <input id="TipoProducto" type="text" class="form-control int32"  disabled="disabled">
+                              <label class="form-label">2</label>
+                          </div>
+                      </div>
+
+                        <div class="row">
+                              <div class="col-xs-12">
+                                  <label class="form-label"> Foto: </label>
+                                  <input id="imagen_archivo" name="archivo" type="file" class="file form-control" />
+                              </div>
+                          </div>
+
+                     </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button id="imagen_insert" type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+         </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div id="form2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="submit_imagen2" class="new" enctype="multipart/form-data">
+            <form id="role-form2" >
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 id="user_tittle2" class="modal-title">Editar Ofertas Web</h3>
+                    <h4 id="user_enable2" class=""></h4>
+                </div>
+                <div class="modal-body">
+                    <div id="user_form_body2" class="box-body">
+                        <div id="id_div2" class="form-group">
+                        <div class="form-line">
+                            {% module xsrf_form_html() %}
+                            <input id="id2" type="text" class="form-control" disabled="disabled">
+                            <label class="form-label">producto ID</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="gestion2" type="text" class="form-control textosigno" required disabled="disabled">
+                            <label class="form-label">Gestión</label>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="catalogo2" type="text" class="form-control textosigno" required disabled="disabled">
+                            <label class="form-label">Catálogo</label>
+                        </div>
+                    </div>
+
+
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="nombre2" type="text" class="form-control textosigno" required disabled="disabled">
+                            <label class="form-label">Nombre</label>
+                        </div>
+                    </div>
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="codigo2" type="text" class="form-control int32" required disabled="disabled">
+                            <label class="form-label">Código</label>
+                        </div>
+                    </div>
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="codvta2" type="text" class="form-control textosigno" required disabled="disabled">
+                            <label class="form-label">Código Venta</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="precio2" type="text" class="form-control float" required disabled="disabled">
+                            <label class="form-label">Precio</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="prepro2" type="text" class="form-control float" required disabled="disabled">
+                            <label class="form-label">Precio Promotora</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="retail2" type="text" class="form-control int32" required disabled="disabled">
+                            <label class="form-label">Retail</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="bonificable2" type="text" class="form-control int32" required disabled="disabled">
+                            <label class="form-label">Bonificable</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="impini2" type="text" class="form-control float" required disabled="disabled">
+                            <label class="form-label">Importe Inicial</label>
+                        </div>
+                    </div>
+
+                                        <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="impfin2" type="text" class="form-control float" required disabled="disabled">
+                            <label class="form-label">Importe Final</label>
+                        </div>
+                    </div>
+
+                                        <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="gesini2" type="text" class="form-control int32" required disabled="disabled">
+                            <label class="form-label">Gestión Inicial</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="gesfin2" type="text" class="form-control int32" required disabled="disabled">
+                            <label class="form-label">Gestión Final</label>
+                        </div>
+                    </div>
+
+                                        <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="semini2" type="text" class="form-control int32" required  disabled="disabled">
+                            <label class="form-label">Semana Inicial</label>
+                        </div>
+                    </div>
+
+                                        <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="semfin2" type="text" class="form-control int32" required disabled="disabled">
+                            <label class="form-label">Semana Final</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-float" hidden>
+                        <div class="form-line">
+                            <input id="TipoProducto2" type="number" class="form-control int32" disabled="disabled">
+                            <label class="form-label">2</label>
+                        </div>
+                    </div>
+
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="form-label"> Foto: </label>
+                                <input id="imagen_archivo2" name="archivo" type="file" class="file form-control" />
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button id="imagen_update2" type="submit" class="btn btn-primary">Modificar</button>
+                </div>
+            </form>
+         </form>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="form3" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 id="cliente_tittle" class="modal-title">Consumo del Servico Ofertas Web</h3>
+                <h4 id="cliente_enable" class=""></h4>
+            </div>
+            <div class="modal-body">
+                <div id="cliente_form_body" class="box-body">
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <select id="Gestion3" name="Gestion3" class="form-control show-tick">
+                                <option value="0" class="fordm-control show-tick">-- Gestión --</option>
+                                {% for fkcatalogo in catalogounico%}
+                                <option value="{{fkcatalogo.Gestion}}" class="form-control show-tick">{{fkcatalogo.Gestion}}</option>
+                                {% end %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <select id="Numerocatalogo3" name="Numerocatalogo3" class="form-control show-tick">
+                                <option value="0" class="form-control show-tick">-- Catálogo --</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    {% if 'ofertaweb_insert' in privileges %}
+                    <button id="servicio" type="button" class="btn bg-indigo waves-effect">Guardar<i class="material-icons">save</i></button>
+                    {% end %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

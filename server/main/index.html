@@ -1,0 +1,55 @@
+{%extends ../common/views/layout.html %}
+{%block style%}
+{%set usuario = user.rol.modulos%}
+<style>
+    .accion{
+        cursor:pointer
+    }
+    .bg-light-green-own{
+        background-color: #689f38;
+    }
+    .bg-lime-own{
+        background-color: #afb42b;
+    }
+    .bg-orange-own{
+        background-color: #f57c00;
+    }
+    .bg-yellow-own{
+        background-color: #f9a825;
+    }
+    .textlight-own{
+        color: white !important;
+    }
+    .info-box-2 {
+        min-height: 92px;
+    }
+    .text-size-own{
+        font-size: 22px !important;
+    }
+    .ics-own{
+        padding-left: 10px;
+    }
+    .box-infom{
+        cursor: pointer !important;
+    }
+</style>
+{%end%}
+
+{%block content%}
+<div class="header">
+    <h2>
+        <small>Backend de Tupperware</small>
+        Bienvenido
+    </h2>
+</div>
+<div class="body">
+
+
+</div>
+
+{%end%}
+
+{% block script %}
+<script src="/resources/js/functions.js"></script>
+
+{%end%}

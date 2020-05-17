@@ -1,0 +1,74 @@
+<div id="form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 id="user_tittle" class="modal-title">Rol</h3>
+                <h4 id="user_enable" class=""></h4>
+            </div>
+            <div class="modal-body">
+                <div id="user_form_body" class="box-body">
+                    <div id="id_div" class="form-group form-float">
+                        <div class="form-line">
+                            {% module xsrf_form_html() %}
+                            <input id="id" type="text" class="form-control" disabled="disabled">
+                            <label class="form-label">Rol ID</label>
+                        </div>
+                    </div>
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="nombre" type="text" class="form-control name" required>
+                            <label class="form-label">Nombre</label>
+                        </div>
+                    </div>
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="descripcion" type="text" class="form-control text" required>
+                            <label class="form-label">Descripción</label>
+                        </div>
+                    </div>
+                    <label>Permisos.</label>
+                    <p>Para adicionar, actualizar o dar de baja se necesita obligatoriamente el privilegio consultar.</p>
+                    <ul class="tree-container">
+                        {% for mods in modulos %}
+                            {% set mods = [mods] %}
+                            {% set parents_ids = [] %}
+                            {% while 0 < len(mods) %}
+                                {% set module = mods.pop() %}
+                                {% while len(parents_ids) > 0 and parents_ids[-1] != module.fkmodulo %}
+                                    </ul>
+                                </li>
+                                {% set del(parents_ids[-1]) %}
+                                {% end %}
+
+                                <li>
+                                    <i class="material-icons">{{module.icon}}</i>
+                                    <input id="{{module.name}}" type="checkbox" class="module chk-col-deep-purple" data-id="{{module.id}}">
+                                    <label for="{{module.name}}" data-id="{{module.id}}" >{{module.title}}</label>
+                                {% if len(module.children) <= 0 %}
+                                    </li>
+                                {% else %}
+                                    {% set mods.extend(module.children[::-1]) %}
+                                    {% set parents_ids.append(module.id) %}
+                                        <ul class="tree-menu">
+                                {% end %}
+                            {% end %}
+                            {% for i in parents_ids %}
+                                </ul>
+                            </li>
+                            {% end %}
+                        {% end %}
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                {% if 'rol_insert' in privileges %}
+                <button id="insert" type="button" class="btn button-green-own waves-effect white-own" >Guardar <i class="material-icons white-own">save</i></button>
+                {% end %}
+                {% if 'rol_update' in privileges %}
+                <button id="update" type="button" class="btn button-green-own waves-effect white-own" >Modificar <i class="material-icons white-own">refresh</i></button>
+                {% end %}
+            </div>
+        </div>
+    </div>
+</div>

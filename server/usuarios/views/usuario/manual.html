@@ -1,0 +1,16 @@
+{%extends ../../../common/views/layout.html%}
+{%block style%}
+{%set usuario = user.rol.modulos%}
+{%end%}
+{%block content%}
+<div class="header" xmlns:height="http://www.w3.org/1999/xhtml">
+    <h2 style="font-size: 22px; font-weight: bolder; font-family: 'Calibri'">
+        Manual de Usuario
+    </h2>
+</div>
+<div class="row" style="height: 650px;">
+    <div class="col-md-12" align="center" >
+        <iframe width="750" height="620" src="resources/manual/manual_monitoreador.pdf" frameborder="0" allowfullscreen></iframe>
+    </div>
+</div>
+{%end%}

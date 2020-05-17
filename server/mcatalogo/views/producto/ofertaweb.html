@@ -1,0 +1,694 @@
+{% extends ../../../common/views/layout.html %}
+{% block style %}
+{% set user = usuario %}
+<style>
+    .accion {
+        cursor: pointer
+    }
+</style>
+<script src="resources/js/functions.js"></script>
+
+<script>
+    main_route = '/ofertaweb'
+
+    function default_values() {
+        page_nr = 1
+        max_entries = 10
+        like_search = ""
+        order_by = ""
+        ascendant = true
+    }
+
+    default_values()
+</script>
+{% end %}
+{% block content %}
+
+
+{% if 'ofertaweb_insert' in privileges or 'ofertaweb_update' in privileges %}
+{% include form_Ofertasweb.html %}
+{% end %}
+    <div class="header bg-indigo">
+        <h2>Lista de Ofertas Web</h2>
+    </div>
+
+    <div class="body">
+        <div class="row clearfix">
+                <div class="col-xs-3 col-sm-6 col-md-6 col-lg-6">
+                    {% if 'ofertaweb_insert' in privileges %}
+                    <button id="new" type="button" class="btn bg-indigo waves-effect">
+                        <i class="material-icons">add</i>
+                    </button>
+                    {% end %}
+
+                     {% if 'ofertaweb_insert' in privileges %}
+                     <button id="ofertaweb_servicio" type="button" class="btn bg-indigo waves-effect" >
+                        <i class="material-icons blanco">cloud_download</i> Obtener Ofertas Web del servicio
+                    </button>
+                    {% end %}
+                </div>
+        </div>
+
+
+        {% if 'ofertaweb_query' in privileges %}
+            <div class="row">
+                <div class="body table-responsive">
+                    <table id="data_table" class="table table-bordered table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th class="order_by_th" data-name="names">Gestión</th>
+                            <th class="order_by_th" data-name="names">Catálogo</th>
+                            <th class="order_by_th" data-name="names">Nombre</th>
+                            <th class="order_by_th" data-name="names">Código</th>
+                            <th class="order_by_th" data-name="names">Código Venta</th>
+                            <th class="order_by_th" data-name="names">Foto</th>
+                            <th class="order_by_th" data-name="names">Precio</th>
+                            <th class="order_by_th" data-name="names">Precio Promotora</th>
+                            <th class="actions_header">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody id="table_content">
+                        {% include 'ofertaweb_table.html' %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% else %}
+        <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+        {% end %}
+        </div>
+
+{% end %}
+{% block script %}
+<script src="resources/plugins/momentjs/moment.js"></script>
+<script src="resources/plugins/momentjs/locale/es.js"></script>
+<script src="resources/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+<script src="resources/js/jquery.toast.js"></script>
+
+<script>
+     //remove_empty_columns()
+        attach_validators()
+         $(document).ready(function () {
+        $(".file").each(function () {
+            $(this).fileinput('refresh',{
+                allowedFileExtensions: ['jpg', 'gif', 'jpeg','png', 'ico', 'webp'],
+                maxFileSize: 20000,
+                maxFilesNum: 1,
+                showUpload: false,
+                layoutTemplates: {
+                                    main1: '{preview}\n' +
+                                        '<div class="kv-upload-progress hide"></div>\n' +
+                                        '<div class="input-group {class}">\n' +
+                                        '   {caption}\n' +
+                                        '   <div class="input-group-btn">\n' +
+                                        '       {remove}\n' +
+                                        '       {cancel}\n' +
+                                        '       {browse}\n' +
+                                        '   </div>\n' +
+                                        '</div>',
+                                    main2: '{preview}\n<div class="kv-upload-progress hide"></div>\n{remove}\n{cancel}\n{browse}\n',
+                                    preview: '<div class="file-preview {class}">\n' +
+                                        '    {close}\n' +
+                                        '    <div class="{dropClass}">\n' +
+                                        '    <div class="file-preview-thumbnails">\n' +
+                                        '    </div>\n' +
+                                        '    <div class="clearfix"></div>' +
+                                        '    <div class="file-preview-status text-center text-success"></div>\n' +
+                                        '    <div class="kv-fileinput-error"></div>\n' +
+                                        '    </div>\n' +
+                                        '</div>',
+                                    icon: '<span class="glyphicon glyphicon-file kv-caption-icon"></span>',
+                                    caption: '<div tabindex="-1" class="form-control file-caption {class}">\n' +
+                                        '   <div class="file-caption-name"></div>\n' +
+                                        '</div>',
+                                    btnDefault: '<button type="{type}" tabindex="500" title="{title}" class="{css}"{status}>{icon}{label}</button>',
+                                    btnLink: '<a href="{href}" tabindex="500" title="{title}" class="{css}"{status}>{icon}{label}</a>',
+                                    btnBrowse: '<div tabindex="500" class="{css}"{status}>{icon}{label}</div>',
+                                    progress: '<div class="progress">\n' +
+                                        '    <div class="progress-bar progress-bar-success progress-bar-striped text-center" role="progressbar" aria-valuenow="{percent}" aria-valuemin="0" aria-valuemax="100" style="width:{percent}%;">\n' +
+                                        '        {percent}%\n' +
+                                        '     </div>\n' +
+                                        '</div>',
+                                    footer: '<div class="file-thumbnail-footer">\n' +
+                                        '    <div class="file-caption-name" style="width:{width}">{caption}</div>\n' +
+                                        '    {progress} {actions}\n' +
+                                        '</div>',
+                                    actions: '<div class="file-actions">\n' +
+                                        '    <div class="file-footer-buttons">\n' +
+                                        '        {delete} {other}' +
+                                        '    </div>\n' +
+                                        '    {drag}\n' +
+                                        '    <div class="file-upload-indicator" title="{indicatorTitle}">{indicator}</div>\n' +
+                                        '    <div class="clearfix"></div>\n' +
+                                        '</div>',
+                                    actionDelete: '<button type="button" class="kv-file-remove {removeClass}" title="{removeTitle}"{dataUrl}{dataKey}>{removeIcon}</button>\n',
+                                    actionDrag: '<span class="file-drag-handle {dragClass}" title="{dragTitle}">{dragIcon}</span>'
+                                }
+            })
+        });
+    })
+
+    $(document).ready(function () {
+
+    });
+     var ips = ""
+      $(document).ajaxStart(function () {
+        $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
+            ips = data
+        })
+    });
+
+    $(document).ajaxStop(function () {
+        $.Toast.hideToast();
+    });
+
+        $('#data_table').DataTable({
+        language : {
+           "url": "/resources/js/spanish.json"
+       }
+    });
+
+    validationKeyup("form");
+    validationSelectChange("form");
+    {attach_validators()}
+    {% if 'ofertaweb_insert' in privileges %}
+    $('#new').click(function () {
+         $('#nombre').val(''),
+            $('#codigo').val(''),
+            $('#codvta').val(''),
+            $('#precio').val(''),
+            $('#prepro').val(''),
+            $('#retail').val(''),
+            $('#bonificable').val(''),
+            $('#impini').val(''),
+            $('#impfin').val(''),
+            $('#gesini').val(''),
+            $('#gesfin').val(''),
+            $('#semini').val(''),
+            $('#semfin').val(''),
+            $('#catalogo').val(''),
+            $('#gestion').val(''),
+            $('#foto').val(''),
+
+        {#clean_form()#}
+        verif_inputs()
+        $('#id_div').hide()
+        $('#insert').show()
+        $('#update').hide()
+        $('#form').modal('show')
+    })
+    $('#imagen_insert').on('click', function (e) {
+            console.log("insert")
+            e.preventDefault();
+            var data = new FormData($('#submit_imagen')[0]);
+            objeto = JSON.stringify({
+                'nombre': $('#nombre').val(),
+                'codigo': $('#codigo').val(),
+                'codvta': $('#codvta').val(),
+                'precio': $('#precio').val(),
+                'prepro': $('#prepro').val(),
+                'retail': $('#retail').val(),
+                'bonifi': $('#bonificable').val(),
+                'impini': $('#impini').val(),
+                'impfin': $('#impfin').val(),
+                'gesini': $('#gesini').val(),
+                'gesfin': $('#gesfin').val(),
+                'semini': $('#semini').val(),
+                'semfin': $('#semfin').val(),
+                'catalogo': parseInt($('#catalogo').children("option:selected").val()),
+                'gestion': parseInt($('#gestion').children("option:selected").val()),
+                'ip': ips,
+
+            });
+            ruta = "{{privileges['ofertaweb_insert'].route}}";
+                    data.append('object', objeto)
+                    data.append('_xsrf',getCookie("_xsrf"))
+                      $.ajax({
+                    url: ruta,
+                    type: "post",
+                    data: data,
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                    async: false
+                },location.reload()).done(function (response) {
+                response=JSON.parse(response);
+                if (response.success){
+                    showMessage(response.message, "success", "ok");
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open');
+                    $('#form').modal('hide')
+                    query(main_route)
+                }else{
+                    showMessage(response.message, "danger", "remove");
+                    $("#submit_imagen").waitMe("hide");
+                }
+            })
+                $('#form').modal('hide')
+        });
+    {% end %}
+
+
+    {% if 'ofertaweb_update' in privileges %}
+    function attach_edit() {
+        $('.edit').click(function () {
+            obj = JSON.stringify({
+                'id': parseInt(JSON.parse($(this).attr('data-json')))
+            })
+            ajax_call_get("{{privileges['ofertaweb_update'].route}}", {
+                _xsrf: getCookie("_xsrf"),
+                object: obj
+            }, function (response) {
+                var self = response;
+                $('#id2').val(self.id)
+                $('#nombre2').val(self.nombre)
+                $('#codigo2').val(self.codigo)
+                $('#codvta2').val(self.codvta)
+                $('#precio2').val(self.precio)
+                $('#prepro2').val(self.prepro)
+                $('#bonificable2').val(self.bonifi)
+                $('#retail2').val(self.retail)
+                $('#impini2').val(self.impini)
+                $('#impfin2').val(self.impfin)
+                $('#gesini2').val(self.gesini)
+                $('#gesfin2').val(self.gesfin)
+                $('#semini2').val(self.semini)
+                $('#semfin2').val(self.semfin)
+                $('#catalogo2').val(self.catalogo)
+                $('#gestion2').val(self.gestion)
+                $('#TipoProducto2').val(self.TipoProducto)
+
+                clean_form()
+                verif_inputs2()
+                $('#id_div2').hide()
+                $('#insert2').hide()
+                $('#update2').show()
+                $('#form2').modal('show')
+            })
+        })
+
+ $('#imagen_update2').on('click', function (e) {
+            console.log("update")
+            e.preventDefault();
+            var data = new FormData($('#submit_imagen2')[0]);
+//            if (!AllGood()){ return }
+            objeto = JSON.stringify({
+                 'id': parseInt($('#id2').val()),
+                'nombre': $('#nombre2').val(),
+                'codigo': $('#codigo2').val(),
+                'codvta': $('#codvta2').val(),
+                'precio': $('#precio2').val(),
+                'prepro': $('#prepro2').val(),
+                'retail': $('#retail2').val(),
+                'bonifi': $('#bonificable2').val(),
+                'impini': $('#impini2').val(),
+                'impfin': $('#impfin2').val(),
+                'gesini': $('#gesini2').val(),
+                'gesfin': $('#gesfin2').val(),
+                'semini': $('#semini2').val(),
+                'semfin': $('#semfin2').val(),
+                'TipoProducto': $('#TipoProducto2').val(),
+                'ip': ips,
+            });
+
+            ruta = "{{privileges['ofertaweb_update'].route}}";
+            data.append('object', objeto)
+            data.append('_xsrf',getCookie("_xsrf"))
+            $.ajax({
+                url: ruta,
+                type: "post",
+                data: data,
+                contentType: false,
+                processData: false,
+                cache: false,
+                async: false
+            }).done(function (response) {
+                response=JSON.parse(response);
+                if (response.success){
+                    showMessage(response.message, "success", "ok");
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open');
+                    $('#form2').modal('hide')
+                    query(main_route)
+                }else{
+                    showMessage(response.message, "danger", "remove");
+                    $("#submit_imagen2").waitMe("hide");
+                }
+            }),location.reload()
+        });
+    }
+         {% end %}
+    reload_form()
+</script>
+<script>
+
+    {% if 'ofertaweb_update' in privileges %}
+    attach_edit();
+    {% end %}
+
+    {% if 'ofertaweb_delete' in privileges %}
+    attach_delete();
+    {% end %}
+
+    {% if 'ofertaweb_delete' in privileges %}
+    function attach_delete() {
+        $('.delete').click(function () {
+            objeto = JSON.stringify({
+                'id': parseInt(JSON.parse($(this).attr('data-json'))),
+                'enabled': false,
+                'ip': ips,
+            });
+            swal({
+                title: "¿Desea dar de baja al ofertaweb?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#673AB7",
+                cancelButtonColor: "#F44336",
+                confirmButtonText: "Aceptar",
+                cancelButtonText: "Cancelar"
+            }).then(function () {
+                ajax_call("{{privileges['ofertaweb_delete'].route}}", {
+                    object: objeto,
+                    _xsrf: getCookie("_xsrf")
+                }, null, function () {
+                    setTimeout(function () {
+                        window.location = main_route
+                    }, 2000);
+                })
+            })
+        });
+    }
+    {% end %}
+
+
+
+ {% if 'ofertaweb_insert' in privileges %}
+    $('#ofertaweb_servicio').click(function () {
+        $('#Gestion3').val(''),
+        $('#Numerocatalogo3').val(''),
+       {#clean_form()#}
+        verif_inputs()
+        $('#id_div').hide()
+        $('#servicio').show()
+        $('#form3').modal('show')
+    })
+
+    $('#servicio').click(function () {
+        values = "nombre";
+       if(!validationInputSelects("form3")) {
+            let gestion3 = parseInt($('#Gestion3').children("option:selected").val());
+            let Numerocatalogo3 = parseInt($('#Numerocatalogo3').children("option:selected").val());
+            objeto = JSON.stringify({
+                'Gestion': gestion3,
+                'Numerocatalogo': Numerocatalogo3,
+                'ip': ips,
+            })
+            ajax_call("/ofertaweb_servicio", {
+                object: objeto,
+                _xsrf: getCookie("_xsrf"),
+                async: true,
+              beforeSend: function () {
+                 $("#rproc-loader").fadeIn(800);
+                 $("#new").hide();
+                $('#form3').modal('hide')
+              },
+              success: function () {
+                 $("#rproc-loader").fadeOut(800);
+                 $("#new").show();
+              }
+
+            }, null)
+            $('#form').modal('hide')
+            window.location = main_route
+        }
+        else {
+            swal(
+                'Error de datos.',
+                'Hay campos vacios por favor verifique sus datos.',
+                'error'
+            )
+        }
+    })
+    {% end %}
+
+
+</script>
+
+
+<script>
+    $(document).ready(function() {
+
+
+        let listaGestion = [];
+          let listaIdGestion = [];
+          {% for cat in catalogo %}
+              if (!listaGestion.includes(" {{ cat.Gestion }} ")){ //verifica si el elemento incluye en el array
+                listaGestion.push(" {{ cat.Gestion }} ");
+                listaIdGestion.push(" {{ cat.id }} ");
+              }
+          {% end %}
+
+
+        let gestionSelect = "";
+          //iterando sobre el array
+          for(let i=0; i<listaGestion.length; i++){
+              gestionSelect = "<option value="+listaIdGestion[i]+">"+listaGestion[i]+"</option>\n"+gestionSelect; //guardo los OPTIONS del SELECT
+              //console.log(elementoSelect);
+          }
+
+        //string que tiene el elemento GESTION SELECT
+        let gestionAppend = "Gestión <select id=\"SelectGestion\" aria-controls=\"data_table\" class=\"form-control input-sm\">\n" +
+                   "  <option value=\"0\">Mostrar todos</option>\n" + gestionSelect +"</select>";
+
+        let elementoAppend = "&nbsp;&nbsp;&nbsp;&nbsp; Catálogo <select id=\"SelectCatalogo\" aria-controls=\"data_table\" class=\"form-control input-sm\">\n" +
+                   "  <option value=\"0\">Seleccione una opción>\n"+"</select>";
+
+        let control = setTimeout(function () {
+                //se agrega una clase despues del row para que muestre el select de los catalogos
+                $("div.body.table-responsive > div#data_table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer > div.row:first").prepend("<div class='col-sm-12'> </div>");
+                //se agrega el elemento GESTION select
+                $("div.body.table-responsive > div#data_table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer > div.row:first > div:first").append(gestionAppend);
+                //se agrega el elemento select
+                $("div.body.table-responsive > div#data_table_wrapper.dataTables_wrapper.form-inline.dt-bootstrap.no-footer > div.row:first > div:first").append(elementoAppend);
+
+                }, 1000  //La función se ejecuta con 2 seg de retraso
+        );// end timeout select
+
+        // SELECT DE GESTION
+        var variable1 = setTimeout(function() {
+        $('#SelectGestion').change(function(){
+            let idSelectedGestion = $(this).children("option:selected").val();
+            let selectedGestion = $(this).children("option:selected").text();
+            $("#SelectCatalogo").empty().append('<option selected="selected" value="0">Seleccione una opción</option>');
+
+            objeto = JSON.stringify({
+                  'gestion' : parseInt(selectedGestion),
+                  'catalogo' : parseInt(idSelectedGestion),
+                  '_xsrf':getCookie("_xsrf")
+              });
+
+            ruta = "\\catalogo_filter";
+            $.ajax({
+                      url: ruta,
+                      method: "POST",
+                      data:{_xsrf: getCookie("_xsrf"), object: objeto},
+                      async: false,
+            }).done(function (response) {
+            response=JSON.parse(response);
+            if ("message" in response && response.message != '') {
+                if (response.success) {
+                    showMessage(response.message, "success", "ok")
+                } else {
+                    showMessage(response.message, "danger", "remove")
+                }
+            }
+
+            let responseGestion = response.response;
+            let selectNumeroCatalogo = "";
+            for (let j=0; j<responseGestion.length; j++){
+                selectNumeroCatalogo = "<option value="+responseGestion[j].id+">"+responseGestion[j].Numerocatalogo+"</option>\n"+selectNumeroCatalogo;
+            }
+            $("#SelectCatalogo").append(selectNumeroCatalogo);
+
+
+            }) //END DONE AJAX CALL
+
+
+              }); //fin change SELECT GESTION JQUERY
+              }, 1500  //La función se ejecuta con 1,5 seg de retraso
+              ); //FIN SETTIMEOUT GESTION
+
+
+
+
+        //SELECT MES
+        var variable2 = setTimeout(function() {
+              $("#SelectCatalogo").change(function () {
+                  let gestion = $("#SelectGestion").children("option:selected").text();
+                  let catalogo = $(this).children("option:selected").val();
+                  let numeroCatalogo = $(this).children("option:selected").text();
+
+                  selectedGestion = parseInt(gestion);
+                  selectedCatalogo = parseInt(catalogo);
+
+                  if (selectedCatalogo !== 0){
+                      var table2 = $('#data_table').DataTable();
+                      table2.clear().draw();
+                      objeto = JSON.stringify({
+                          'gestion' : parseInt(selectedGestion),
+                          'catalogo' : parseInt(selectedCatalogo),
+                          '_xsrf':getCookie("_xsrf")
+                      });
+
+                      ruta = "\ofertaweb_cat_filter";
+                      $.ajax({
+                              url: ruta,
+                              method: "POST",
+                              data:{_xsrf: getCookie("_xsrf"), object: objeto},
+                              async: false,
+                    }).done(function (response) {
+                    response=JSON.parse(response);
+                    if ("message" in response && response.message != '') {
+                        if (response.success) {
+                            showMessage(response.message, "success", "ok")
+                        } else {
+                            showMessage(response.message, "danger", "remove")
+                        }
+                    }
+
+                    let arrayProductos = response.response;
+                    var gestionSeleccionada = $( "#SelectGestion option:selected" ).text();
+                    var reemplazo = "";
+                    for (let j=1; j<=arrayProductos.length; j++){
+                       var botones="";
+                        botones = botones+"<button id='edit' data-json='"+arrayProductos[j-1].id +"' type='button' class='btn bg-indigo waves-effect waves-light edit' title='Editar'><i class='material-icons'>create</i></button>";
+                        botones = botones+"<button id='delete' data-json='"+arrayProductos[j-1].id+"' type='button' class='btn bg-red waves-effect waves-light delete' title='Eliminar'><i class='material-icons'>clear</i></button>";
+                        if (arrayProductos[j-1].foto== " ") {
+                           var foto = "<img src=\'resources/images/sinImagen.jpg\' alt=\"\" style=\"width: 100px; height: 60px;\">";
+                        } else {
+                            var foto ="<img src=\'"+arrayProductos[j-1].foto+"\' alt=\"\" style=\"width: 100px; height: 60px;\">";
+                        }
+
+
+                      reemplazo = (arrayProductos[j - 1].remplazo);
+                      if (typeof reemplazo !== 'object') {
+                          reemplazo = arrayProductos[j - 1].remplazo;
+                      } else {
+                          reemplazo = "No es reemplazado por ningún producto";
+                      }
+
+                        table2.row.add( [
+                            gestionSeleccionada,
+                            numeroCatalogo,
+                            arrayProductos[j-1].nombre,
+                            arrayProductos[j-1].codigo,
+                            arrayProductos[j-1].codvta,
+                            foto,
+                            arrayProductos[j-1].precio,
+                            arrayProductos[j-1].prepro,
+                            botones
+                        ] ).draw( false );
+                    }
+                    attach_edit();
+                    attach_delete();
+                    }) //fin ajax
+                  }else{
+                      swal(
+                            'Error de selección.',
+                            'Seleccione primero una Gestión.',
+                            'error'
+                        )
+                  }
+              }); //fin change SELECT
+              }, 2200  //La función se ejecuta con 2 seg de retraso
+              ); //FIN SETTIMEOUT
+
+
+
+    //SELECT FORMULARIO
+    var variable3 = setTimeout(function() {
+        $("#gestion").change(function () {
+            let gestionform = parseInt($(this).children("option:selected").val());
+            obj = JSON.stringify({
+                'gestion': gestionform,
+                '_xsrf': getCookie("_xsrf")
+            });
+            ruta = "\catalogo_filter";
+            $.ajax({
+                method: "POST",
+                url: ruta,
+                data: {_xsrf: getCookie("_xsrf"), object: obj},
+                async: false
+            }).done(function (response) {
+            response = JSON.parse(response);
+            $('#catalogo').html('');
+            var select = document.getElementById("catalogo");
+            for (let i = 0; i < response.response.length; i++) {
+                var option = document.createElement("OPTION");
+                option.innerHTML = "Catálogo :"+response.response[i].Numerocatalogo;
+                option.value = response.response[i].id;
+                select.appendChild(option);
+            }
+            $('#catalogo').selectpicker('refresh');
+            });
+          }); //fin change SELECT
+    }, 2200  //La función se ejecuta con 2 seg de retraso
+    ); //FIN SETTIMEOUT
+
+    //SELECT FORMULARIO SERVICIO
+    var variable4 = setTimeout(function() {
+            $("#Gestion3").change(function() {
+                let gestionform = parseInt($(this).children("option:selected").val());
+                obj = JSON.stringify({
+                    'gestion': gestionform,
+                    '_xsrf': getCookie("_xsrf")
+                });
+                ruta = "\catalogo_filter";
+                $.ajax({
+                    method: "POST",
+                    url: ruta,
+                    data: {
+                        _xsrf: getCookie("_xsrf"),
+                        object: obj
+                    },
+                    async: false
+                }).done(function(response) {
+                    response = JSON.parse(response);
+                    console.log(response.response);
+                    $('#Numerocatalogo3').html('');
+                    var select = document.getElementById("Numerocatalogo3");
+                    for (let i = 0; i < response.response.length; i++) {
+                        var option = document.createElement("OPTION");
+                        option.innerHTML = "Catálogo :" + response.response[i].Numerocatalogo;
+                        option.value = response.response[i].id;
+                        select.appendChild(option);
+                    }
+                    $('#Numerocatalogo3').selectpicker('refresh');
+                });
+            }); //fin change SELECT
+        }, 2000 //La función se ejecuta con 2 seg de retraso
+    ); //FIN SETTIMEOUT
+
+
+
+
+
+
+    });// end ready function
+</script>
+
+<script>
+$(document).ready(function() {
+    $('#data_table tbody').on('click', '.edit', function () {
+        attach_edit();
+        attach_delete();
+    });
+    $('#data_table tbody').on('click', '.delete', function () {
+        attach_edit();
+        attach_delete();
+    });
+});
+</script>
+
+
+{% end %}

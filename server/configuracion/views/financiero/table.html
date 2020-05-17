@@ -1,0 +1,20 @@
+
+{% for c in objects %}
+<tr>
+    <td>{{ c.nombre }}</td>
+    {% if c.imagen==" " %}
+    <td><img src="resources/images/sinImagen.jpg" alt="" style="width: 100px; height: 60px;"/></td>
+        {% else%}
+    <td><img src="{{ c.imagen }}" alt="" style="width: 100px; height: 60px;"/></td>
+        {% end%}
+
+
+    <td align="center">
+        {% if 'financiero_update' in privileges %}
+        <button id="edit" data-json="{{c.id}}" type="button" class="btn bg-indigo waves-effect waves-light edit" title="Editar"><i class="material-icons">create</i></button>
+        {% end %}
+
+
+    </td>
+</tr>
+{% end %}

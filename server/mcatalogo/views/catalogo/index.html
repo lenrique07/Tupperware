@@ -1,0 +1,591 @@
+{% extends ../../../common/views/layout.html %}
+{% block style %}
+{% set user = usuario %}
+<style>
+    .accion {
+        cursor: pointer
+    }
+    .scroll-own{
+        overflow-y: scroll;
+    }
+      .md-dialog-own{
+        width: 60% !important;
+    }
+</style>
+<script src="resources/js/functions.js"></script>
+
+<link href="resources/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
+<script>
+    main_route = '/catalogo'
+
+    function default_values() {
+        page_nr = 1
+        max_entries = 10
+        like_search = ""
+        order_by = ""
+        ascendant = true
+    }
+
+    default_values()
+</script>
+{% end %}
+{% block content %}
+
+
+{% if 'catalogo_insert' in privileges or 'catalogo_update' in privileges %}
+{% include form.html %}
+{% end %}
+
+{% include form_catalogo.html %}
+{% include form_paginas.html %}
+
+<div class="header bg-indigo"><h2>Catalogo</h2></div>
+<div class="body">
+    <div class="row clearfix">
+      <div class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+        {% if 'catalogo_insert' in privileges %}
+        <button id="new" type="button" class="btn bg-indigo waves-effect">
+          <i class="material-icons">add</i>
+        </button>
+            {% end %}
+        </div>
+    </div>
+        <div id="rproc-loader" class="loader-wrapper" style="display: none">
+            <div class="loader loader-own">
+                <div class="preloader preloader-own">
+                    <div class="spinner-layer pl-teal">
+                        <div class="circle-clipper left"><div class="circle"></div></div>
+                        <div class="circle-clipper right"><div class="circle"></div></div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center inf-own">Cargando...</p>
+        </div>
+
+    {% if 'catalogo_query' in privileges %}
+    <div class="row">
+        <div class="body table-responsive">
+            <table id="data_table" class="table table-bordered table-striped table-hover">
+                <thead>
+                <tr>
+
+                    <th class="order_by_th" data-name="names">Gestión</th>
+                    <th class="order_by_th" data-name="names">N° Catalogo </th>
+                    <th class="order_by_th" data-name="names">Nro. de Páginas</th>
+                    <th class="order_by_th" data-name="names">Portada</th>
+                    <th class="order_by_th" data-name="names">Fecha Inicio</th>
+                    <th class="order_by_th" data-name="names">Fecha Final</th>
+                    <th class="order_by_th" data-name="names">Estado</th>
+                    <th class="actions_header">Acciones</th>
+
+                </tr>
+                </thead>
+                <tbody id="table_content">
+                {% include 'table.html' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-xs-9 col-sm-10 col-md-10 col-lg-10"></div>
+    {% end %}
+</div>
+{% end %}
+{% block script %}
+<script src="resources/plugins/momentjs/moment.js"></script>
+<script src="resources/plugins/momentjs/locale/es.js"></script>
+<script src="resources/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+<script src="resources/js/jquery.toast.js"></script>
+
+<script src="resources/plugins/bootstrap-select/js/bootstrap-select.js"></script>
+<!-- Jquery Validation Plugin Css -->
+<!--<script src="resources/plugins/jquery-validation/jquery.validate.js"></script>-->
+<!-- Input Mask Plugin Js -->
+<script src="resources/js/validations.js"></script>
+<script src="resources/plugins/jquery-inputmask/jquery.inputmask.bundle.js"></script>
+<script src="resources/plugins/momentjs/moment.js"></script>
+<script src="resources/plugins/momentjs/locale/es.js"></script>
+<script src="resources/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+<script>
+//FECHA PICKER
+$("#t_start").inputmask("h:s",{ "placeholder": "__/__" });
+$("#t_end").inputmask("h:s",{ "placeholder": "__/__" });
+$("#t_start2").inputmask("h:s",{ "placeholder": "__/__" });
+$("#t_end2").inputmask("h:s",{ "placeholder": "__/__" });
+    attach_validators()
+    reload_form()
+
+$('#FechaFinal').bootstrapMaterialDatePicker({
+    format: 'D/MM/YYYY',
+        clearButton: false,
+        weekStart: 1,
+        locale:'es',
+        time: false
+});
+$('#FechaInicio').bootstrapMaterialDatePicker({
+    format: 'D/MM/YYYY',
+        clearButton: false,
+        weekStart: 1,
+        locale:'es',
+        time: false
+}).on('change', function(e, date)
+{
+$('#FechaFinal').bootstrapMaterialDatePicker('setMinDate', date);
+});
+
+$('#FechaFinal2').bootstrapMaterialDatePicker({
+    format: 'D/MM/YYYY',
+        clearButton: false,
+        weekStart: 1,
+        locale:'es',
+        time: false
+});
+$('#FechaInicio2').bootstrapMaterialDatePicker({
+    format: 'D/MM/YYYY',
+        clearButton: false,
+        weekStart: 1,
+        locale:'es',
+        time: false
+}).on('change', function(e, date)
+{
+$('#FechaFinal2').bootstrapMaterialDatePicker('setMinDate', date);
+});
+$('#FechaFinal2').click(
+    $('#FechaFinal2').bootstrapMaterialDatePicker('setMinDate',  $('#FechaInicio2').val())
+)
+
+ //FIN FECHA PICKER
+</script>
+<script>
+var ips = ""
+      $(document).ajaxStart(function () {
+        $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
+            ips = data
+        })
+    });
+
+    $(document).ajaxStop(function () {
+        $.Toast.hideToast();
+    });
+
+        $('#data_table').DataTable({
+        /*dom: 'Bfrtip',
+        pageLength: 100,
+        buttons: [
+
+        ],*/language : {
+           "url": "/resources/js/spanish.json"
+       }
+    });
+
+    {#attach_validators()#}
+    {% if 'catalogo_insert' in privileges %}
+    $('#new').click(function () {
+        $('#Gestion').val(''),
+        $('#FechaInicio').val(''),
+        $('#FechaFinal').val(''),
+        $('#NumeroPaginas').val(''),
+        $('#Numerocatalogo').val(''),
+        $('#Estado').val(''),
+
+       {#clean_form()#}
+        verif_inputs()
+        $('#id_div').hide()
+        $('#insert').show()
+        $('#update').hide()
+        $('#form').modal('show')
+      })
+
+    $('#imagen_insert').on('click', function (e) {
+            e.preventDefault();
+            var data = new FormData($('#submit_imagen')[0]);
+        if(!validationInputSelects("form")) {
+            objeto = JSON.stringify({
+                'ip': $('#ip').val(),
+                 'Gestion': $('#Gestion').val(),
+                'FechaInicio': $('#FechaInicio').val(),
+                'FechaFinal': $('#FechaFinal').val(),
+                'NumeroPaginas': $('#NumeroPaginas').val(),
+                'Numerocatalogo': $('#Numerocatalogo').val(),
+                'Estado': $('#Estado').val(),
+                'ip':  ips,
+            });
+            ruta = "{{privileges['catalogo_insert'].route}}";
+                    data.append('object', objeto)
+                    data.append('_xsrf',getCookie("_xsrf"))
+                      $.ajax({
+                    url: ruta,
+                    type: "post",
+                    data: data,
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                      async: true,
+            beforeSend: function () {
+               $("#rproc-loader").fadeIn(800);
+               $("#new").hide();
+            },
+            success: function () {
+               $("#rproc-loader").fadeOut(800);
+               $("#new").show();
+            }
+                }).done(function (response) {
+                response=JSON.parse(response);
+                console.log(response)
+                 console.log(response.success)
+                if (response.success){
+                    swal(
+                            'Se Inserto correctamente',
+                          ),
+
+                  //  showMessage(response.message, "success", "ok");
+                  //  $('.modal-backdrop').remove();
+                   // $('body').removeClass('modal-open');
+                    $('#form').modal('hide')
+                }else{
+                    showMessage(response.message, "danger", "remove");
+                    $("#submit_imagen").waitMe("hide");
+                }
+            },location.reload())
+                $('#form').modal('hide')
+         }else {
+            swal(
+                    'Error de datos.',
+                    'Hay campos vacios por favor verifique sus datos.',
+                    'error'
+            )
+        }
+        });
+
+    $('#imagen_update_paginas').on('click', function (e) {
+            e.preventDefault();
+            var data = new FormData($('#submit_imagen_paginas')[0]);
+            objeto = JSON.stringify({
+                'id': $('#id_paginas').val(),
+                'ip':  ips,
+            });
+            ruta = "catalogo_update_paginas";
+            data.append('object', objeto)
+            data.append('_xsrf',getCookie("_xsrf"))
+            render = null
+            callback = function () {
+                setTimeout
+                (function () {
+
+                }, 2000);
+            }
+            $.ajax({
+                url: ruta,
+                type: "post",
+                data: data,
+                contentType: false,
+                processData: false,
+                cache: false,
+                async: true,
+            beforeSend: function () {
+               $("#rproc-loader").fadeIn(800);
+               $("#new").hide();
+            },
+            success: function () {
+               $("#rproc-loader").fadeOut(800);
+               $("#new").show();
+            }
+            }).done(function (response) {
+                response=JSON.parse(response);
+                if ("message" in response && response.message != '') {
+                    if (response.success) {
+                        showMessage(response.message, "success", "ok")
+                    } else {
+                        showMessage(response.message, "danger", "remove")
+                    }
+                }
+                if (callback != null) {
+                    callback(response)
+                }
+            })
+                $('#form_paginas').modal('hide')
+                $('#archivo_paginas').val('clear selectes files')
+
+        });
+
+
+    {% end %}
+
+    function convertirFecha(fecha){
+        var valores = fecha.split("-")
+        var nuevaFecha = valores[2] + "/" +  valores[1] + "/" + valores[0]
+        return nuevaFecha
+    }
+
+    function convertirEstado(estado){
+        if (estado == true)
+            estado = 1
+        else
+            estado = 2
+        return estado
+    }
+
+ function convertirFechadate(fecha){
+        var valores = fecha.split("/")
+        var nuevaFecha = valores[2] + "-" +  valores[1] + "-" + valores[0]
+        return nuevaFecha
+    }
+
+
+
+
+
+    {% if 'catalogo_update' in privileges %}
+    function attach_edit() {
+        $('.edit').click(function () {
+            obj = JSON.stringify({
+                'id': parseInt(JSON.parse($(this).attr('data-json')))
+            });
+          ajax_call_get("{{privileges['catalogo_update'].route}}", {
+                _xsrf: getCookie("_xsrf"),
+                object: obj
+            }, function (response) {
+                var self = response;
+                $('#id2').val(self.id),
+                $('#Gestion2').val(self.Gestion),
+                $('#FechaInicio2').val(convertirFecha(self.FechaInicio))
+                $('#FechaFinal2').val(convertirFecha(self.FechaFinal))
+                $('#NumeroPaginas2').val(self.NumeroPaginas),
+                $('#Numerocatalogo2').val(self.Numerocatalogo)
+                $('#Estado2').selectpicker('val',convertirEstado(self.Estado))
+                $('#FechaFinal2').bootstrapMaterialDatePicker('setMinDate',  $('#FechaInicio2').val())
+
+                clean_form()
+                verif_inputs2()
+                $('#id_div2').hide()
+                $('#insert2').hide()
+                $('#update2').show()
+                $('#form2').modal('show')
+            })
+        });
+
+        $('#imagen_update2').on('click', function (e) {
+
+            e.preventDefault();
+            var data = new FormData($('#submit_imagen2')[0]);
+//            if (!AllGood()){ return }
+            objeto = JSON.stringify({
+                'id': parseInt($('#id2').val()),
+                'Gestion': $('#Gestion2').val(),
+                'FechaInicio': convertirFechadate($('#FechaInicio2').val()),
+                'FechaFinal': convertirFechadate($('#FechaFinal2').val()),
+                'NumeroPaginas': $('#NumeroPaginas2').val(),
+                'Numerocatalogo': $('#Numerocatalogo2').val(),
+                'Estado': $('#Estado2').val(),
+                'ip':  ips,
+            });
+            ruta = "{{privileges['catalogo_update'].route}}";
+            data.append('object', objeto)
+            data.append('_xsrf',getCookie("_xsrf"))
+            $.ajax({
+                url: ruta,
+                type: "post",
+                data: data,
+                contentType: false,
+                processData: false,
+                cache: false,
+                async: false
+            }).done(function (response) {
+                response=JSON.parse(response);
+                if (response.success){
+                    showMessage(response.message, "success", "ok");
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open');
+                    $('#form2').modal('hide')
+                    query(main_route)
+                }else{
+                    showMessage(response.message, "danger", "remove");
+                    $("#submit_imagen2").waitMe("hide");
+                }
+            }),location.reload()
+        });
+    }
+
+    {% end %}
+    reload_form()
+</script>
+<script>
+
+    {% if 'catalogo_update' in privileges %}
+    attach_edit()
+    {% end %}
+
+    {% if 'catalogo_delete' in privileges %}
+    $('.delete').click(function () {
+        objeto = JSON.stringify({
+            'id':  parseInt(JSON.parse($(this).attr('data-json'))),
+            'enabled': false,
+            'ip':  ips,
+        });
+        swal({
+            title: "¿Desea dar de baja el Catalogo?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#673AB7",
+            cancelButtonColor: "#F44336",
+            confirmButtonText: "Aceptar",
+            cancelButtonText: "Cancelar"
+        }).then(function () {
+            ajax_call("{{privileges['catalogo_delete'].route}}", {
+                object: objeto,
+                _xsrf: getCookie("_xsrf")
+            }, null, function () {
+                setTimeout(function () {
+                    window.location = main_route
+                }, 2000);
+            })
+        })
+    });
+    {% end %}
+
+     {% if 'catalogo_query' in privileges %}
+        attach_pagina()
+        {% end %}
+
+      function append_table(catalogo) {
+        var partaux = "";
+        var i = 0;
+        var editar= ""
+        var portada= ""
+
+        for (a in catalogo.paginas) {
+
+          if ( catalogo.paginas[i].portada == " "){
+            portada = "https://www.dropbox.com/s/v03qin9j72jks1l/sinImagen.jpg?raw=1"
+          }else{
+            portada = catalogo.paginas[i].portada
+
+          }
+
+
+            var editar ="<button id='edit-pagina' type='button'  data-json='" + catalogo.paginas[i].id + "' class='btn bg-indigo waves-effect waves-light edit_pagina' title='Editar'><i class='material-icons'>create</i></button>"
+
+            partaux = partaux + '<tr><td>' + catalogo.paginas[i].numero + '</td><td>'+ catalogo.Numerocatalogo + '</td><td><img src="' + portada + '" alt="" style="width: 100px; height: 60px;"/></td><td>' + editar + '</td></tr>';
+
+            i = i + 1;
+
+        }
+
+        $('#table_paginas').append(
+            '<div class="row">\
+                <div class="body table-responsive">\
+                <table id="data_table" class="table table-bordered table-striped table-hover js-basic-example js-exportable dataTable">\
+                <thead>\
+                    <tr>\
+                    <th class="order_by_th" data-name="names">Nro. Página </th>\
+                    <th class="order_by_th" data-name="names">Nro. Catálogo </th>\
+                    <th class="order_by_th" data-name="names">Portada </th>\
+                    <th class="actions_header">Acciones</th>\
+                    </tr>\
+                </thead>\
+                 <tbody id="table_content">' + partaux + '</tbody>\
+        </table>\
+        </div>\
+        </div>'
+        )
+          // BOTÓN EDIT DE FORM_CATALOGO PARA IR A FORM_PAGINAS
+          $('.edit_pagina').click(function () {
+            obj = JSON.stringify({
+                'id': parseInt(JSON.parse($(this).attr('data-json')))
+            })
+
+            ajax_call_get('pagina_update', {
+                _xsrf: getCookie("_xsrf"),
+                object: obj
+            }, function (response) {
+
+                var self = response;
+                var cont = 1;
+                $('#id_paginas').val(self['id']);
+                $('#numero_paginas').val(self['numero']);
+                $('#fkcatalogo_catalogo').val(self['catalogo'].Numerocatalogo);
+                document.getElementById("imagen_show_img_paginas").src = self['portada'];
+
+                $('#productos_div').empty()
+
+                for(i in response['productos']){
+                    aux = response['productos'][i].nombre
+
+                    //(cont)
+                    $('#numero'+cont).val(cont)
+                    $('#producto'+cont).val(aux)
+                    cont = cont + 1;
+                    append_input_producto
+                }
+
+                clean_form()
+                verif_inputs_paginas()
+                $('#id_div_paginas').hide()
+                $('#insert_paginas').hide()
+                $('#update_paginas').show()
+                $('#form_paginas').modal('show')
+            })
+        })
+
+    }
+
+      function append_input_producto(id_in) {
+        $('#productos_div').append(
+          '<div class="row">\
+               <div class="col-md-2">\
+                  <div class="form-line"><input id="numero'+id_in+'" type="text" class="form-control" readonly="readonly" ></div>\
+              </div>\
+              <div class="col-md-10">\
+                  <div class="form-line"><input id="producto'+id_in+'" type="text" class="form-control" readonly="readonly" ></div>\
+              </div>\
+              </div>\
+          </div>'
+        )
+
+      }
+
+
+    // BOTóN PAGINA (LUPA) DE CATALOGO PARA VER PAGINAS
+    {% if 'catalogo_query' in privileges %}
+    function attach_pagina() {
+        $('.paginas').click(function () {
+            $('#form_catalogo').addClass('scroll-own')
+            obj = JSON.stringify({
+                'id': parseInt(JSON.parse($(this).attr('data-json')))
+            })
+          ajax_call_get("{{privileges['catalogo_update'].route}}", {
+                _xsrf: getCookie("_xsrf"),
+                object: obj
+            }
+           , function (response) {
+                var self = response;
+
+                $('#id_catalogo').val(self.id),
+                $('#Gestion_catalogo').val(self.Gestion),
+                $('#FechaInicio_catalogo').val(convertirFecha(self.FechaInicio))
+                $('#FechaFinal_catalogo').val(convertirFecha(self.FechaFinal))
+                $('#NumeroPaginas_catalogo').val(self.NumeroPaginas),
+                $('#Numerocatalogo_catalogo').val(self.Numerocatalogo)
+                $('#Estado_catalogo').selectpicker('val',convertirEstado(self.Estado))
+                document.getElementById("imagen_show_img_catalogo").src = self.portada;
+
+                $('#table_paginas').empty();
+                append_table(self)
+
+                clean_form()
+                verif_inputs_catalogo()
+                $('#id_div_catalogo').hide()
+                $('#insert_catalogo').hide()
+                $('#update_catalogo').show()
+                $('#form_catalogo').modal('show')
+            })
+        })
+    }
+     {% end %}
+</script>
+
+{% end %}
+
+
+
+

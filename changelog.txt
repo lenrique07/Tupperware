@@ -1,0 +1,75 @@
+! se fixeo las vistas parciales se adiciono el SocketController
+! se configuro las vistas
+* se cambio en renderizar las vistas
++ se adiciono jquery lightligery
++ se adiciono el statichandler
+=======
+=======
++ se adiciono configuraciones para demo de asistencia
+
+1.0.2 - 1 Dic 2017
+===============================
+!se adiciono metodos de testeo
+
+1.0.3 - 16 Oct 2017
+===============================
+!se adiciono filtrado por sexo
+!se fixeo el importar excel empleado con pais, departamento, ciudad, sucursal
+!se adiciono imprimir excel y pdf en la parte de reportes de asistencia
+!se adiciono cambio de horario para empleados
+!se adiciono para que no se muevan los empleados y se pueda minimizar
+!se fixeo el verificar si esta con un titulo en especifico en el excel
+!se quito datos de prueba de cloudbit
++se adiciono la tolerancia por mes
+
+1.0.4 - 30 Oct 2017
+===============================
++se adiciono reporte de faltas anomalias general
++se adiciono reporte de observaciones, atrasos, asistencia perfecta
++se fixeo el listado de los empleados en los reportes, asignaciones, asignaciones temporales
++se realizo el reporte de retrasos como estaba requerido monterrey
++se fixeo el reporte de monterrey para el filtrado por sucursal y por area de trabajo
++se fixeo el reporte de monterrey ultima fila no mostraba y arreglando la vista
+
+1.0.5 - 17 Nov 2017
+===============================
++se adiciono campos de configuracion de horas extras
++se adiciono reporte de horas extras
+
+1.0.6 - 21 Nov 2017
+===============================
+! se modifico el formato de la fecha en los reportes
+! se volvio al formato de reporte anterior de vista
+
+1.0.7 - 22 Dic 2017
+===============================
+! se adiciono templates para vacaciones
+! se adiciono vistas de sql para base de datos
+! se fixeo los reportes para su respectiva generacion
+
+1.0.8 - 22 Dic 2017
+===============================
++ se adiciono el modulo de ausencias con planificador para las asignacion de vacaciones automaticas
+! se fixeo el planificador para cada minuto verificar los estados del empleado en vacacion
+! se fixeo el planificador de vacaciones
+=======
+Legend:
++ New
+* Changed
+! Fixed
+// Comment
+
+1.0.1 - 29 Nov 2017
+===============================
+! se fixeo las vistas parciales se adiciono el SocketController
+! se configuro las vistas
+* se cambio en renderizar las vistas
++ se adiciono jquery lightligery
++ se adiciono el statichandler
+
+1.0.2 - 1 Dic 2017
+===============================
+!se arreglo las peticiones de datos para editar no se muestra nada de datos sensibles en el Frontend
+!se arreglo peticiones get con query, tembien la parte del frontend
+!se arreglo el serializable
+

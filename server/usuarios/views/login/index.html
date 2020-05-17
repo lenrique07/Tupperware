@@ -1,0 +1,215 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head >
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+     <title>Tupperware/Deslumbrantes</title>
+
+    <link rel="icon" href="resources/icono.png" type="image/x-icon">
+    <link href="resources/css/iconfont/material-icons.css" rel="stylesheet">
+    <link href="resources/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="resources/plugins/node-waves/waves.css" rel="stylesheet" />
+    <link href="resources/plugins/animate-css/animate.css" rel="stylesheet" />
+    <link href="resources/css/style.css" rel="stylesheet">
+    <link href="resources/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+</head>
+    <style>
+        .login-page{
+            background-image: url("resources/images/Fondo_Movil.jpg");
+            background-repeat:no-repeat;
+            background-size:cover;
+        }
+
+        .input-group .form-line::after{
+            border-bottom: 2px solid #0B1D50;
+        }
+        .card-own{
+            padding: 8px 10px 0px 10px;
+        }
+        .title-own{
+            font-family: sans-serif;
+            text-transform: uppercase;
+            color: #37474f;
+        }
+        .bgp-red{
+            background-color: #ef5350 !important;
+        }
+        .bgp-orange{
+            background-color: #ff9800 !important;
+        }
+        .col-owner {
+            padding-left: 30px;
+            margin-bottom: 0px;
+            padding-top: 10px;
+        }
+        .msg-owner{
+            font-style: normal !important;
+        }
+
+        .white-own{
+            color: white !important;
+        }
+
+        .button-blue-dark-own{
+            background-color: #096b65;
+
+        }
+
+        .titulo-verde-own{
+            color:  white  !important;
+        }
+    </style>
+
+<body class="login-page "width="500" height="500">
+    <div class="login-box">
+        <div class="card">
+
+            <div class="body">
+                    <div class="logo">
+                        <center>
+                            <img class="img-responsive" width="210" height="220" src="https://www.dropbox.com/s/fy1gym3zv3mw8bk/images.png?raw=1">
+                        </center>
+                    </div>
+                <form id="sign_in" method="POST" autocomplete="off" onsubmit="validar()">
+                    {% module xsrf_form_html() %}
+                    <div class="msg text-center title-own">Iniciar sesión</div>
+
+                    <div
+                    {% if error == 1 %}
+                        class="card bg-orange bgp-orange"
+                    {% else %}
+                        {% if error == 2 %}
+                            class="card bg-red bgp-red"
+                        {% end %}
+                    {% end %}
+                    id="msg-data">
+
+                        <div class="card-content white-text card-own">
+                            <div class="card-content white-text">
+                                    {% if error == 1 %}
+                                        <div class="row clearfix">
+                                            <div class="col-sm-2 m-r--5 p-t-10 col-owner">
+                                                <i class="material-icons">vpn_lock</i>
+                                            </div>
+                                            <div class="col-sm-10 p-t-15">
+                                                <i class="msg-owner">Usuario inhabilitado</i>
+                                            </div>
+                                        </div>
+                                    {% end %}
+                                    {% if error == 2 %}
+                                        <div class="row clearfix">
+                                            <div class="col-sm-2 m-r--5 p-t-10 col-owner">
+                                                <i class="material-icons">warning</i>
+                                            </div>
+                                            <div class="col-sm-10 p-t-15">
+                                                <i class="msg-owner">Datos incorrectos</i>
+                                            </div>
+                                        </div>
+                                    {% end %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="material-icons">person</i>
+                        </span>
+                        <div class="form-line">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Nombre de usuario" autofocus>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="material-icons">lock</i>
+                        </span>
+                        <div class="form-line">
+                            <input id="password" type="password" class="form-control" id="password" name="password" placeholder="Contraseña">
+                        </div>
+                        <span class="input-group-addon" id="see-pass" style="cursor: pointer;" title="Mostrar">
+                            <i class="material-icons" style="color: grey" id="ic-pass">visibility_off</i>
+                        </span>
+                    </div>
+                    <div class="form-line">
+                       <input id="ip" type="hidden" class="form-control" id="ip" name="ip" placeholder="ip">
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-xs-4 col-xs-offset-4">
+                            <button id="btn-login" class="btn button-blue-dark-own btn-block waves-effect white-own" type="submit">Ingresar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="resources/plugins/jquery/jquery.min.js"></script>
+    <script src="resources/plugins/bootstrap/js/bootstrap.js"></script>
+    <script src="resources/plugins/node-waves/waves.js"></script>
+    <script src="resources/plugins/jquery-validation/jquery.validate.js"></script>
+    <script src="resources/js/admin.js"></script>
+    <script src="resources/plugins/sweetalert2/sweetalert2.min.js"></script>
+</body>
+<script>
+    var ips = ""
+
+        $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data) {
+            ips = data
+            console.log(ips)
+             document.getElementById("ip").value=ips
+        })
+
+    $( document ).ready(function() {
+
+    });
+
+    $(function () {
+        $('#sign_in').validate({
+            highlight: function (input) {
+
+                $(input).parents('.form-line').addClass('error');
+            },
+            unhighlight: function (input) {
+                $(input).parents('.form-line').removeClass('error');
+            },
+            errorPlacement: function (error, element) {
+                $(element).parents('.input-group').append(error);
+            }
+        });
+    });
+
+    $('#see-pass').mousedown(function(){
+        $("#ic-pass").css("color", "lightgrey");
+        $("#password").prop("type", "text");
+        $("#ic-pass").html("visibility");
+    });
+
+    $("#see-pass").mouseup(function(){
+        $("#ic-pass").css("color", "grey");
+        $("#password").prop("type", "password");
+        $("#ic-pass").html("visibility_off");
+    });
+
+    function validar(){
+        if($('#username').val() == '' && $('#password').val() == ''){
+            $('#msg-data').fadeIn('slow')
+            return false
+        }else{
+            $('#msg-data').fadeOut('slow')
+            return true
+        }
+    }
+
+    $('#sign_in').submit(function(){
+        if(!$('#username').val() == '' && $(!'#password').val() == ''){
+            $('#btn-login').html('Espere...')
+            $('#msg-data').fadeOut('slow')
+        }else{
+            $('#msg-data').fadeIn('slow')
+        }
+    });
+</script>
+
+</html>

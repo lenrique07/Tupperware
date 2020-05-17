@@ -1,0 +1,94 @@
+<!-- Bootstrap Select Css -->
+<link href="resources/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
+<div id="form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="submit_imagen" class="new" enctype="multipart/form-data">
+            <form id="role-form" >
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h3 id="user_tittle" class="modal-title">Pagina</h3>
+                    <h4 id="user_enable" class=""></h4>
+                </div>
+                <div class="modal-body">
+                    <div id="cliente_form_body" class="box-body">
+                    <div id="id_div" class="form-group">
+                        <div class="form-line">
+                            {% module xsrf_form_html() %}
+                            <input id="id" type="number" class="form-control" disabled="disabled">
+                            <label class="form-label">pagina ID</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="nfoto">
+                                <label>Portada Actual</label>
+                                <div id="imagen_archivo" class="row m-b-20">
+                                    <div class="text-center">
+                                        <img id='imagen_show_img' src='' width='250px'>
+                                        </br>
+                                        </br>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label class="form-label">Nueva Portada: </label>
+                                <input id="archivo" name="archivo" type="file" class="file form-control"
+                                       width='300px'/>
+                                </br>
+                                </br>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+              <div class="row clearfix">
+                <div class="col-sm-3">
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="fkcatalogo" name="fkcatalogo" type="text" class="form-control int32"  required >
+                            <label class="form-label">Número de Catálogo</label>
+                        </div>
+                    </div>
+                 </div>
+
+
+                 <div class="col-sm-3">
+                    <div class="form-group form-float">
+                        <div class="form-line">
+                            <input id="numero" name="numero" type="text" class="form-control int32" required >
+                            <label class="form-label">Número de Página</label>
+                        </div>
+                    </div>
+                  </div>
+              </div>
+                </div>
+
+                <div id="productos" class="box-body">
+                    <div id="productos_div" class="clearfix">
+
+                    </div>
+                </div>
+
+            </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                  {% if 'pagina_insert' in privileges %}
+                    <button id="imagen_insert" type="submit" class="btn btn-primary">Guardar</button>
+                   {% end %}
+                    {% if 'pagina_update' in privileges %}
+                    <button id="imagen_update" type="submit" class="btn btn-primary">Actualizar portada</button>
+                   {% end %}
+                </div>
+            </form>
+         </form>
+        </div>
+    </div>
+</div>
+
+
